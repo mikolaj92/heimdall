@@ -1,0 +1,107 @@
+# Heimdall label taxonomy — apply with scripts or gh; do not invent ad-hoc names.
+version: 1
+owner: heimdall
+namespaces:
+  - name: bifrost
+    description: Direction across the bridge
+    color: "58A6FF"
+    labels:
+      - name: bifrost:in
+        description: Inbound signal (reply, mention, issue, feedback)
+      - name: bifrost:out
+        description: Outbound artifact (draft post, release note, announcement)
+  - name: verdict
+    description: Heimdall gate decision
+    color: "D4A72C"
+    labels:
+      - name: verdict:pass
+        description: May proceed (post or accept into backlog)
+        color: "3FB950"
+      - name: verdict:hold
+        description: Not yet — missing proof, unclear, wait
+        color: "D4A72C"
+      - name: verdict:reject
+        description: Noise, spam, false claim, out of scope
+        color: "F85149"
+      - name: verdict:needs-scout
+        description: Human scout must decide
+        color: "A371F7"
+  - name: signal
+    description: Kind of inbound signal
+    color: "79C0FF"
+    labels:
+      - name: signal:feedback
+        description: Product opinion / experience report
+      - name: signal:bug
+        description: Something broken
+      - name: signal:feature
+        description: Ask for new capability
+      - name: signal:question
+        description: Needs an answer, not necessarily code
+      - name: signal:praise
+        description: Positive signal worth amplifying
+      - name: signal:noise
+        description: No action (spam, off-topic, empty)
+        color: "6E7681"
+  - name: source
+    description: Origin platform
+    color: "8B949E"
+    labels:
+      - name: source:github
+        description: From GitHub
+      - name: source:x
+        description: From X / Twitter
+      - name: source:bluesky
+        description: From Bluesky
+      - name: source:mastodon
+        description: From Mastodon
+      - name: source:linkedin
+        description: From LinkedIn
+      - name: source:other
+        description: Other or unknown source
+  - name: story
+    description: Kind of outbound story (Influenzer)
+    color: "F778BA"
+    labels:
+      - name: story:major
+        description: Major version / milestone
+      - name: story:ship
+        description: Concrete ship with artifact
+      - name: story:explore
+        description: What we are investigating
+      - name: story:issue
+        description: A hard problem we opened or hit
+      - name: story:decision
+        description: Choice we made and why
+      - name: story:failure
+        description: What broke / what we learned
+  - name: work
+    description: Engineering queue for Lokay
+    color: "7EE787"
+    labels:
+      - name: work:ready
+        description: Triaged, ready to implement
+      - name: work:doing
+        description: Lokay is on it
+      - name: work:blocked
+        description: Stuck on decision or dependency
+        color: "F85149"
+      - name: work:done
+        description: Shipped / closed
+        color: "6E7681"
+  - name: pri
+    description: Urgency
+    color: "FFA657"
+    labels:
+      - name: pri:p0
+        description: Drop everything
+        color: "F85149"
+      - name: pri:p1
+        description: This week
+        color: "FFA657"
+      - name: pri:p2
+        description: Normal
+        color: "D4A72C"
+      - name: pri:p3
+        description: Backlog / whenever
+        color: "8B949E"
