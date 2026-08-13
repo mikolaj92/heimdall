@@ -73,4 +73,4 @@ Apply taxonomy (idempotent; does not recreate GitHub defaults such as `bug` / `e
 
 ## Status
 
-Role + taxonomy v1. Issue craft contract, templates, label sync. `observe-queue` atom (`uv run observe-queue`). Mail Bifrost not wired yet.
+Role + taxonomy v1. Issue craft contract, templates, label sync. Atoms: `observe-queue` (`uv run observe-queue`), `dual-label-ready` (`uv run dual-label-ready --repo OWNER/NAME --issue N`). Mail Bifrost not wired yet.
