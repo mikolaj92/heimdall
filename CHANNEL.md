@@ -33,7 +33,9 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `observe-verdict` (`uv run observe-verdict`) prints a JSON envelope of open PRs Heimdall should look at for QA/verdict: all open PRs on heimdall, plus mill-looking open PRs on catalog repos (`ai:` labels or `ai/` heads). Read-only. Does not merge, comment, label, or wake the mill.
 
-Fala (`mikolaj92/Fala`) composes observe + dual-label + observe-verdict as one monitor path ([`fala-package.toml`](fala-package.toml)): `uv run observe-queue`, then `uv run dual-label-pass` (conduction after observe), then `uv run observe-verdict` (conduction after dual-label-pass). The pass applies mill `ai:ready` on catalog issues that already have `work:ready`. Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.
+`observe-outbound` (`uv run observe-outbound`) prints a JSON envelope of open GitHub items that claim outbound (`bifrost:out`) but must not ship yet (missing `verdict:pass`), surveying heimdall issues+PRs and the mill catalog (never heimdall twice); read-only — does not merge, comment, label, wake the mill, or call Influenzer.
+
+Fala (`mikolaj92/Fala`) composes observe + dual-label + observe-verdict + observe-outbound as one monitor path ([`fala-package.toml`](fala-package.toml)): `uv run observe-queue`, then `uv run dual-label-pass` (conduction after observe), then `uv run observe-verdict` (conduction after dual-label-pass), then `uv run observe-outbound` (conduction after observe-verdict). The pass applies mill `ai:ready` on catalog issues that already have `work:ready`. Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.
 
 Email is not the internal bot bus.
 

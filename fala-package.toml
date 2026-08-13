@@ -1,7 +1,7 @@
 version = "2"
 id = "heimdall"
 title = "Heimdall monitor"
-description = "Parent monitors the GitHub bus, closes the mill dual-label gap, then lists open PRs for QA. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake or steer the Lokay mill."
+description = "Parent monitors the GitHub bus, closes the mill dual-label gap, lists open PRs for QA, then lists outbound that must not ship yet. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake or steer the Lokay mill."
 tags = ["heimdall", "monitor"]
 
 [[impulse_types]]
@@ -25,6 +25,11 @@ id = "github.observe_verdict"
 title = "Read-only open PRs for Heimdall QA/verdict"
 media_types = ["application/json"]
 
+[[reaction_kinds]]
+id = "github.observe_outbound"
+title = "Read-only outbound items that must not ship yet"
+media_types = ["application/json"]
+
 [[capabilities]]
 id = "observe_queue"
 title = "Read GitHub coordination bus; does not apply labels or wake the mill"
@@ -43,10 +48,16 @@ title = "Read open PRs for QA/verdict; does not merge, comment, label, or wake t
 accepts_reaction_kinds = ["github.dual_label"]
 emits_reaction_kinds = ["github.observe_verdict"]
 
+[[capabilities]]
+id = "observe_outbound"
+title = "Read outbound that must not ship yet; does not merge, comment, label, wake the mill, or call Influenzer"
+accepts_reaction_kinds = ["github.observe_verdict"]
+emits_reaction_kinds = ["github.observe_outbound"]
+
 [[correlation_paths]]
 id = "monitor"
-title = "Observe bus, close dual-label gap, then observe PRs for verdict"
-description = "Fala conducts observe-queue, dual-label-pass, then observe-verdict. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
+title = "Observe bus, close dual-label gap, observe PRs for verdict, then outbound that must not ship"
+description = "Fala conducts observe-queue, dual-label-pass, observe-verdict, then observe-outbound. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
 
 [[correlation_paths.effectors]]
 id = "observe"
@@ -64,6 +75,12 @@ id = "observe_verdict"
 capability = "observe_verdict"
 conduction = ["dual_label"]
 adapter = { kind = "subprocess", command = ["uv", "run", "observe-verdict"], cwd = "." }
+
+[[correlation_paths.effectors]]
+id = "observe_outbound"
+capability = "observe_outbound"
+conduction = ["observe_verdict"]
+adapter = { kind = "subprocess", command = ["uv", "run", "observe-outbound"], cwd = "." }
 
 # Fala-owned journal. Effectors never open this file.
 [runtime.backend]

@@ -73,4 +73,4 @@ Apply taxonomy (idempotent; does not recreate GitHub defaults such as `bug` / `e
 
 ## Status
 
-Role + taxonomy v1. Issue craft contract, templates, label sync. Atoms: `observe-queue` (`uv run observe-queue`), `dual-label-ready` (`uv run dual-label-ready --repo OWNER/NAME --issue N`), `dual-label-pass` (`uv run dual-label-pass`), `observe-verdict` (`uv run observe-verdict`), `craft-ready` (`uv run craft-ready --file spec.json`). Fala composes observe + dual-label-pass + observe-verdict; mill autonomy stays mill. Mail Bifrost not wired yet.
+Role + taxonomy v1. Issue craft contract, templates, label sync. Atoms: `observe-queue` (`uv run observe-queue`), `dual-label-ready` (`uv run dual-label-ready --repo OWNER/NAME --issue N`), `dual-label-pass` (`uv run dual-label-pass`), `observe-verdict` (`uv run observe-verdict`), `observe-outbound` (`uv run observe-outbound`), `craft-ready` (`uv run craft-ready --file spec.json`). Fala composes observe + dual-label-pass + observe-verdict + observe-outbound; mill autonomy stays mill. Mail Bifrost not wired yet.
