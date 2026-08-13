@@ -35,6 +35,8 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `verdict-apply` (`uv run verdict-apply --repo OWNER/NAME --issue N --verdict verdict:pass`) applies one `verdict:*` from [`labels.yml`](labels.yml) (also `--pr N`; optional `--comment`); not on the Fala monitor path.
 
+`out-apply` (`uv run out-apply --repo OWNER/NAME --issue N --artifact URL`) marks outbound that may ship (`bifrost:out` + `verdict:pass`; fail closed without an http(s) artifact URL; also `--pr N`; optional `--comment`); not on the Fala monitor path.
+
 `observe-verdict` (`uv run observe-verdict`) prints a JSON envelope of open PRs Heimdall should look at for QA/verdict: all open PRs on heimdall, plus mill-looking open PRs on catalog repos (`ai:` labels or `ai/` heads). Read-only. Does not merge, comment, label, or wake the mill.
 
 `observe-outbound` (`uv run observe-outbound`) prints a JSON envelope of open GitHub items that claim outbound (`bifrost:out`) but must not ship yet (missing `verdict:pass`), surveying heimdall issues+PRs and the mill catalog (never heimdall twice); read-only — does not merge, comment, label, wake the mill, or call Influenzer.
