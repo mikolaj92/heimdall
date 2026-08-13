@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "heimdall"
 version = "0.1.0"
-description = "CEO gateway. Small Unix atoms; observe-queue, dual-label-ready, dual-label-pass."
+description = "CEO gateway. Small Unix atoms; observe-queue, dual-label-ready, dual-label-pass, observe-verdict."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Mikolaj" }]
@@ -15,6 +15,7 @@ dependencies = []
 observe-queue = "heimdall.observe_queue:main"
 dual-label-ready = "heimdall.dual_label_ready:main"
 dual-label-pass = "heimdall.dual_label_pass:main"
+observe-verdict = "heimdall.observe_verdict:main"
 
 [dependency-groups]
 dev = [

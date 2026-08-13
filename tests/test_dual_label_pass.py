@@ -250,7 +250,9 @@ def test_fala_package_declares_monitor_path() -> None:
     assert 'id = "monitor"' in text
     assert 'command = ["uv", "run", "observe-queue"]' in text
     assert 'command = ["uv", "run", "dual-label-pass"]' in text
+    assert 'command = ["uv", "run", "observe-verdict"]' in text
     assert 'conduction = ["observe"]' in text
+    assert 'conduction = ["dual_label"]' in text
     assert "python3" not in text
 
 
