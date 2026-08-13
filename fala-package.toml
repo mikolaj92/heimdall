@@ -1,7 +1,7 @@
 version = "2"
 id = "heimdall"
 title = "Heimdall monitor"
-description = "Parent monitors the GitHub bus, closes the mill dual-label gap, lists open PRs for QA, lists outbound that must not ship yet, lists stuck blocked issues, then watches Influenzer's GitHub. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake tick or mill."
+description = "Parent monitors the GitHub bus, closes the mill dual-label gap, lists open PRs for QA, lists outbound that must not ship yet, lists stuck blocked issues, watches Influenzer's GitHub, then lists Heimdall inbound not yet handed to Lokay. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake tick or mill."
 tags = ["heimdall", "monitor"]
 
 [[impulse_types]]
@@ -40,6 +40,11 @@ id = "github.observe_influenzer"
 title = "Read-only Influenzer GitHub items"
 media_types = ["application/json"]
 
+[[reaction_kinds]]
+id = "github.observe_inbound"
+title = "Read-only Heimdall inbound triage queue"
+media_types = ["application/json"]
+
 [[capabilities]]
 id = "observe_queue"
 title = "Read GitHub coordination bus; does not apply labels or wake the mill"
@@ -76,10 +81,16 @@ title = "Read Influenzer GitHub; does not merge, comment, label, wake tick, mill
 accepts_reaction_kinds = ["github.observe_blocked"]
 emits_reaction_kinds = ["github.observe_influenzer"]
 
+[[capabilities]]
+id = "observe_inbound"
+title = "Read Heimdall inbound triage queue; does not apply work:ready, wake mill, SSH, or mail"
+accepts_reaction_kinds = ["github.observe_influenzer"]
+emits_reaction_kinds = ["github.observe_inbound"]
+
 [[correlation_paths]]
 id = "monitor"
-title = "Observe bus, close dual-label gap, observe PRs for verdict, outbound that must not ship, stuck blocked issues, then Influenzer GitHub"
-description = "Fala conducts observe-queue, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, then observe-influenzer. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
+title = "Observe bus, close dual-label gap, observe PRs for verdict, outbound that must not ship, stuck blocked issues, Influenzer GitHub, then Heimdall inbound triage"
+description = "Fala conducts observe-queue, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, observe-influenzer, then observe-inbound. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
 
 [[correlation_paths.effectors]]
 id = "observe"
@@ -115,6 +126,12 @@ id = "observe_influenzer"
 capability = "observe_influenzer"
 conduction = ["observe_blocked"]
 adapter = { kind = "subprocess", command = ["uv", "run", "observe-influenzer"], cwd = "." }
+
+[[correlation_paths.effectors]]
+id = "observe_inbound"
+capability = "observe_inbound"
+conduction = ["observe_influenzer"]
+adapter = { kind = "subprocess", command = ["uv", "run", "observe-inbound"], cwd = "." }
 
 # Fala-owned journal. Effectors never open this file.
 [runtime.backend]
