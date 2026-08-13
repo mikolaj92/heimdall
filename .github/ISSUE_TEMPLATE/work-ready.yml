@@ -1,0 +1,71 @@
+name: Work ready
+description: Lokay handoff. Complete craft contract only.
+labels: ["work:ready", "pri:p2", "bifrost:in"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Lokay executes from this issue only — no chat, no email. Fill every field per ISSUE_CRAFT.md. Template applies `work:ready`, `pri:p2`, `bifrost:in`. If priority is not p2, change the `pri:*` label to match. Add `verdict:*` as needed. Incomplete → use Inbound and `verdict:hold`.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is wrong or missing, in one concrete claim.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: In scope vs out of scope. What Lokay must not do.
+    validations:
+      required: true
+  - type: input
+    id: repo
+    attributes:
+      label: Repo
+      description: Target `owner/name` (branch if not default). File on that repo when possible.
+      placeholder: owner/name
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance
+      description: Observable checks that mean done. No follow-up chat.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints
+      description: Time, deps, files to touch or avoid, compatibility. Write None if none.
+    validations:
+      required: true
+  - type: textarea
+    id: artifact_qa
+    attributes:
+      label: Artifact / QA
+      description: What Heimdall will inspect after Lokay. If a ship will be claimed, say what artifact link is required.
+    validations:
+      required: true
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: Apply the matching `pri:*` label. Template defaults to `pri:p2`.
+      options:
+        - "pri:p0"
+        - "pri:p1"
+        - "pri:p2"
+        - "pri:p3"
+      default: 2
+    validations:
+      required: true
+  - type: checkboxes
+    id: craft_ok
+    attributes:
+      label: Craft
+      options:
+        - label: Complete per ISSUE_CRAFT.md. Lokay will not be pinged in chat or email.
+          required: true

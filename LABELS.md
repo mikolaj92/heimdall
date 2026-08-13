@@ -94,4 +94,4 @@ Default inbound that passes the gate: `pri:p2`.
 4. `verdict:needs-scout` stops automation until the human moves it.
 5. Do not invent labels outside this file — extend the taxonomy here first.
 
-Machine-readable copy: [`labels.yml`](labels.yml).
+Machine-readable copy: [`labels.yml`](labels.yml). Apply with `python3 scripts/sync-labels.py` (see script header).

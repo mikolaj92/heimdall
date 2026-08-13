@@ -19,7 +19,7 @@ Bots talk to Heimdall, not to the CEO. Heimdall triages and routes.
 | Partner | How |
 | --- | --- |
 | Grok Bot teammates | Agent messages (`SendToAgent`). Do not email-steer them. |
-| Lokay | A repo-compatible GitHub issue labeled `work:ready` (+ `pri:*`). Lokay is hands-off: it only executes code from ready issues. |
+| Lokay | A repo-compatible GitHub issue labeled `work:ready` (+ `pri:*`). Lokay is hands-off: it only executes code from ready issues. Craft contract: [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md). |
 | Influenzer | Feedback in to Heimdall. Outbound only after `verdict:pass`. |
 | Labels | [`LABELS.md`](LABELS.md) / [`labels.yml`](labels.yml) — namespaces `bifrost`, `verdict`, `signal`, `source`, `story`, `work`, `pri`. Do not invent names. |
 
