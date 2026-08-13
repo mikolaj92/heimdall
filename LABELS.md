@@ -3,7 +3,7 @@
 Source of truth for labels Heimdall may apply across org repos.
 Namespaces are prefixes. One label per dimension unless noted.
 
-Heimdall owns applying and changing these. Grok Bot Lokay consumes `work:*`. The Unix mill consumes `ai:ready` on catalog repos — mill-owned, not this taxonomy; mapping in [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md). Influenzer consumes `story:*` and respects `verdict:*` on outbound. The scout (human) is pinged via `verdict:needs-scout`.
+Heimdall owns applying and changing these. Lokay consumes `work:*`. Influenzer consumes `story:*` and respects `verdict:*` on outbound. The scout (human) is pinged via `verdict:needs-scout`.
 
 ## bifrost:* — direction
 
@@ -64,7 +64,7 @@ One primary.
 
 One primary. Prefer `story:major` / `story:ship` / `story:failure` over vibes.
 
-## work:* — queue for Grok Bot Lokay (producer)
+## work:* — queue for Lokay (producer)
 
 | Label | Meaning |
 | --- | --- |
@@ -90,9 +90,8 @@ Default inbound that passes the gate: `pri:p2`.
 
 1. Heimdall labels; others read.
 2. No `verdict:pass` on `bifrost:out` without an artifact link if the text implies a ship.
-3. `signal:noise` ⇒ `verdict:reject`, no `work:*`, no mill `ai:ready`.
+3. `signal:noise` ⇒ `verdict:reject`, no `work:*`.
 4. `verdict:needs-scout` stops automation until the human moves it.
-5. Do not invent Heimdall labels outside this file — extend the taxonomy here first.
-6. Do not add mill `ai:*` here. On mill catalog repos, apply `ai:ready` per [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md).
+5. Do not invent labels outside this file — extend the taxonomy here first.
 
 Machine-readable copy: [`labels.yml`](labels.yml). Apply with `python3 scripts/sync-labels.py` (see script header).

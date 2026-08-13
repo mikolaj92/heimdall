@@ -38,7 +38,7 @@ Handoff chain: **inbound → triage → ready issue (`work:ready`) → Lokay →
 
 Heimdall’s only handoff to Lokay is that labeled issue. Never chat or email Lokay to execute. See [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md).
 
-Channels: CEO ↔ Heimdall is email. Heimdall ↔ Grok Bot teammates is agent messages. Email is not the internal bot bus. See [`CHANNEL.md`](CHANNEL.md). Two Lokay surfaces (Grok Bot teammate vs Unix mill): [`MILL.md`](MILL.md).
+Channels: CEO ↔ Heimdall is email. Heimdall ↔ Grok Bot teammates is agent messages. Email is not the internal bot bus. See [`CHANNEL.md`](CHANNEL.md).
 
 ## Flow
 
