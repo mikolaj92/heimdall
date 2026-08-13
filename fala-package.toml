@@ -1,7 +1,7 @@
 version = "2"
 id = "heimdall"
 title = "Heimdall monitor"
-description = "Parent monitors the GitHub bus, then closes the mill dual-label gap. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake or steer the Lokay mill."
+description = "Parent monitors the GitHub bus, closes the mill dual-label gap, then lists open PRs for QA. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake or steer the Lokay mill."
 tags = ["heimdall", "monitor"]
 
 [[impulse_types]]
@@ -20,6 +20,11 @@ id = "github.dual_label"
 title = "Catalog work:ready dual-label pass"
 media_types = ["application/json"]
 
+[[reaction_kinds]]
+id = "github.observe_verdict"
+title = "Read-only open PRs for Heimdall QA/verdict"
+media_types = ["application/json"]
+
 [[capabilities]]
 id = "observe_queue"
 title = "Read GitHub coordination bus; does not apply labels or wake the mill"
@@ -32,10 +37,16 @@ title = "Apply mill ai:ready on catalog work:ready; no-op on heimdall; does not 
 accepts_reaction_kinds = ["github.observe"]
 emits_reaction_kinds = ["github.dual_label"]
 
+[[capabilities]]
+id = "observe_verdict"
+title = "Read open PRs for QA/verdict; does not merge, comment, label, or wake the mill"
+accepts_reaction_kinds = ["github.dual_label"]
+emits_reaction_kinds = ["github.observe_verdict"]
+
 [[correlation_paths]]
 id = "monitor"
-title = "Observe bus, then close dual-label gap"
-description = "Fala conducts observe-queue then dual-label-pass. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
+title = "Observe bus, close dual-label gap, then observe PRs for verdict"
+description = "Fala conducts observe-queue, dual-label-pass, then observe-verdict. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
 
 [[correlation_paths.effectors]]
 id = "observe"
@@ -47,6 +58,12 @@ id = "dual_label"
 capability = "dual_label_pass"
 conduction = ["observe"]
 adapter = { kind = "subprocess", command = ["uv", "run", "dual-label-pass"], cwd = "." }
+
+[[correlation_paths.effectors]]
+id = "observe_verdict"
+capability = "observe_verdict"
+conduction = ["dual_label"]
+adapter = { kind = "subprocess", command = ["uv", "run", "observe-verdict"], cwd = "." }
 
 # Fala-owned journal. Effectors never open this file.
 [runtime.backend]
