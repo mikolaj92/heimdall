@@ -46,7 +46,7 @@ Do not start Lokay informally while the issue sits on hold.
 
 ## After Lokay
 
-Lokay moves `work:ready` → `work:doing` → `work:done` (or `work:blocked`). A merged PR that `Closes #N` auto-applies `work:done` when that issue is `work:ready` or `work:doing`; opening such a PR moves `work:ready` → `work:doing` ([`.github/workflows/advance-work-labels.yml`](.github/workflows/advance-work-labels.yml)). Heimdall QAs the result against the acceptance and artifact notes before Influenzer may claim a ship (`verdict:pass` on `bifrost:out` requires a real artifact link).
+Lokay moves `work:ready` → `work:doing` → `work:done` (or `work:blocked`). A merged PR that `Closes #N` auto-applies `work:done` when that issue is `work:ready` or `work:doing`; opening such a PR moves `work:ready` → `work:doing` ([`.github/workflows/advance-work-labels.yml`](.github/workflows/advance-work-labels.yml)). Heimdall QAs the result against the acceptance and artifact notes before Influenzer may claim a ship (`verdict:pass` on `bifrost:out` requires a real artifact link). `uv run verdict-apply --repo OWNER/NAME --issue N --verdict verdict:pass` applies one `verdict:*` from [`labels.yml`](labels.yml) (also `--pr`; optional `--comment`).
 
 ## Templates
 
