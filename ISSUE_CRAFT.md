@@ -50,7 +50,7 @@ Lokay moves `work:ready` → `work:doing` → `work:done` (or `work:blocked`). A
 
 ## Templates
 
-- Signal triage: [`.github/ISSUE_TEMPLATE/inbound.yml`](.github/ISSUE_TEMPLATE/inbound.yml)
+- Signal triage: [`.github/ISSUE_TEMPLATE/inbound.yml`](.github/ISSUE_TEMPLATE/inbound.yml). `uv run craft-inbound --file spec.json` (stdin if `--file` omitted) files that inbound form (`bifrost:in`, never `work:ready`).
 - Lokay handoff: [`.github/ISSUE_TEMPLATE/work-ready.yml`](.github/ISSUE_TEMPLATE/work-ready.yml)
 
 Dropdown values on those forms are auto-applied as taxonomy labels by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml) (`scripts/auto-label-issue.py`) on issue opened or edited. Humans do not need a second click for `source:*` / `signal:*` / chosen `pri:*`, or to replace `verdict:hold` when the inbound dropdown is not hold.

@@ -31,6 +31,8 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `craft-ready` (`uv run craft-ready --file spec.json`) creates a complete `work:ready` issue; it is not on the Fala monitor path.
 
+`craft-inbound` (`uv run craft-inbound --file spec.json`) files a `bifrost:in` triage issue (inbound template; never `work:ready`); it is not on the Fala monitor path.
+
 `verdict-apply` (`uv run verdict-apply --repo OWNER/NAME --issue N --verdict verdict:pass`) applies one `verdict:*` from [`labels.yml`](labels.yml) (also `--pr N`; optional `--comment`); not on the Fala monitor path.
 
 `observe-verdict` (`uv run observe-verdict`) prints a JSON envelope of open PRs Heimdall should look at for QA/verdict: all open PRs on heimdall, plus mill-looking open PRs on catalog repos (`ai:` labels or `ai/` heads). Read-only. Does not merge, comment, label, or wake the mill.
