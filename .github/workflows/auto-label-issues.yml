@@ -1,0 +1,23 @@
+name: Auto-label issues
+
+on:
+  issues:
+    types: [opened, edited]
+
+concurrency:
+  group: auto-label-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply form dropdown labels
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/auto-label-issue.py
