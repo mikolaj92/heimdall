@@ -1,7 +1,7 @@
 version = "2"
 id = "heimdall"
 title = "Heimdall monitor"
-description = "Parent monitors the GitHub bus, closes the mill dual-label gap, lists open PRs for QA, lists outbound that must not ship yet, then lists stuck blocked issues. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake or steer the Lokay mill."
+description = "Parent monitors the GitHub bus, closes the mill dual-label gap, lists open PRs for QA, lists outbound that must not ship yet, lists stuck blocked issues, then watches Influenzer's GitHub. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake tick or mill."
 tags = ["heimdall", "monitor"]
 
 [[impulse_types]]
@@ -35,6 +35,11 @@ id = "github.observe_blocked"
 title = "Read-only stuck blocked issues"
 media_types = ["application/json"]
 
+[[reaction_kinds]]
+id = "github.observe_influenzer"
+title = "Read-only Influenzer GitHub items"
+media_types = ["application/json"]
+
 [[capabilities]]
 id = "observe_queue"
 title = "Read GitHub coordination bus; does not apply labels or wake the mill"
@@ -65,10 +70,16 @@ title = "Read stuck blocked issues; does not merge, comment, label, wake the mil
 accepts_reaction_kinds = ["github.observe_outbound"]
 emits_reaction_kinds = ["github.observe_blocked"]
 
+[[capabilities]]
+id = "observe_influenzer"
+title = "Read Influenzer GitHub; does not merge, comment, label, wake tick, mill, SSH, or mail"
+accepts_reaction_kinds = ["github.observe_blocked"]
+emits_reaction_kinds = ["github.observe_influenzer"]
+
 [[correlation_paths]]
 id = "monitor"
-title = "Observe bus, close dual-label gap, observe PRs for verdict, outbound that must not ship, then stuck blocked issues"
-description = "Fala conducts observe-queue, dual-label-pass, observe-verdict, observe-outbound, then observe-blocked. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
+title = "Observe bus, close dual-label gap, observe PRs for verdict, outbound that must not ship, stuck blocked issues, then Influenzer GitHub"
+description = "Fala conducts observe-queue, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, then observe-influenzer. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
 
 [[correlation_paths.effectors]]
 id = "observe"
@@ -98,6 +109,12 @@ id = "observe_blocked"
 capability = "observe_blocked"
 conduction = ["observe_outbound"]
 adapter = { kind = "subprocess", command = ["uv", "run", "observe-blocked"], cwd = "." }
+
+[[correlation_paths.effectors]]
+id = "observe_influenzer"
+capability = "observe_influenzer"
+conduction = ["observe_blocked"]
+adapter = { kind = "subprocess", command = ["uv", "run", "observe-influenzer"], cwd = "." }
 
 # Fala-owned journal. Effectors never open this file.
 [runtime.backend]

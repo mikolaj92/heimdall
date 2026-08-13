@@ -45,6 +45,8 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `observe-blocked` (`uv run observe-blocked`) prints a JSON envelope of open issues that are stuck (`work:blocked` on heimdall; `work:blocked` or mill `ai:blocked` on catalog repos, never heimdall twice); read-only — does not merge, comment, label, wake the mill, or mail.
 
+`observe-influenzer` (`uv run observe-influenzer`) prints a JSON envelope of open items on Influenzer's GitHub (default `mikolaj92/influenzer`): inbound (`bifrost:in`), outbound that must not ship (`bifrost:out` missing `verdict:pass`), `work:blocked`, `verdict:hold`, and all open PRs. One repo only; does not fetch the mill catalog. Read-only — does not merge, comment, label, wake Influenzer tick, SSH, mail, or mill.
+
 Fala (`mikolaj92/Fala`) conducts the monitor path in [`fala-package.toml`](fala-package.toml). Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.
 
 Email is not the internal bot bus.
