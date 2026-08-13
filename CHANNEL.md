@@ -23,6 +23,8 @@ Bots talk to Heimdall, not to the CEO. Heimdall triages and routes.
 | Influenzer | Feedback in to Heimdall. Outbound only after `verdict:pass`. |
 | Labels | [`LABELS.md`](LABELS.md) / [`labels.yml`](labels.yml) — namespaces `bifrost`, `verdict`, `signal`, `source`, `story`, `work`, `pri`. Do not invent names. |
 
+Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including heimdall). Unix mill: mill-catalog repos + `ai:ready`. Dual-label is one craft rule in [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md), not a coordination brain. Do not add heimdall to the mill catalog. Do not add `ai:*` to [`labels.yml`](labels.yml).
+
 Email is not the internal bot bus.
 
 ## Do not

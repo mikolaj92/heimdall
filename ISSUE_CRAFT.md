@@ -19,11 +19,11 @@ A Lokay-ready issue MUST contain all of the following. If any item is missing or
 
 ## Required labels
 
-Heimdall applies labels. Lokay reads `work:*`. Do not invent names — [`labels.yml`](labels.yml) only.
+Heimdall applies labels. Lokay reads `work:*`. Do not invent Heimdall names — [`labels.yml`](labels.yml) only.
 
 | Label | When |
 | --- | --- |
-| `work:ready` | All required fields are filled. This is the only execute signal. |
+| `work:ready` | All required fields are filled. This is the only Heimdall execute signal. |
 | `pri:*` | Always, with `work:ready`. Default inbound that passed the gate: `pri:p2`. |
 | `bifrost:in` or `bifrost:out` | Anything Heimdall touches. Engineering handoff is almost always `bifrost:in`. |
 | `verdict:*` | As needed. Accepted work may be `verdict:pass`. Unclear work is `verdict:hold`, never `work:ready`. |
@@ -31,6 +31,12 @@ Heimdall applies labels. Lokay reads `work:*`. Do not invent names — [`labels.
 One primary `work:*` and one `pri:*`. Do not combine `work:ready` with `verdict:hold`, `verdict:reject`, or `verdict:needs-scout`.
 
 `signal:noise` ⇒ `verdict:reject`, no `work:*`.
+
+### Mill catalog (one rule)
+
+On a mill-catalog repo ([mikolaj92/lokay `repos.mikolaj92.yaml`](https://github.com/mikolaj92/lokay/blob/main/repos.mikolaj92.yaml)), also apply `ai:ready`. The mill surveys that label, not `work:ready`. Dual-label is this rule, not a coordination brain.
+
+Do not add heimdall to that catalog. Do not add `ai:*` to [`labels.yml`](labels.yml) — mill-owned; mapping lives here. heimdall itself: `work:ready` only.
 
 ## Incomplete
 
@@ -49,12 +55,12 @@ Lokay moves `work:ready` → `work:doing` → `work:done` (or `work:blocked`). A
 
 Dropdown values on those forms are auto-applied as taxonomy labels by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml) (`scripts/auto-label-issue.py`) on issue opened or edited. Humans do not need a second click for `source:*` / `signal:*` / chosen `pri:*`, or to replace `verdict:hold` when the inbound dropdown is not hold.
 
-Auto-label is not craft. `work:ready` still requires every required field above. Inbound stays `verdict:hold` until Heimdall decides; inbound auto-label never applies `work:ready`.
+Auto-label is not craft. `work:ready` still requires every required field above. Inbound stays `verdict:hold` until Heimdall decides; inbound auto-label never applies `work:ready`. Catalog `ai:ready` is applied by Heimdall at craft time, not by auto-label.
 
 ## Do not
 
 - Chat or email Lokay to execute
 - Label `work:ready` on a stub, “TBD”, or “Lokay will figure it out”
-- Invent labels outside [`LABELS.md`](LABELS.md)
+- Invent labels outside [`LABELS.md`](LABELS.md) (mill `ai:ready` on catalog repos is the exception above)
 - Use email as the bot bus ([`CHANNEL.md`](CHANNEL.md))
-- Open synthetic or probe issues to test auto-label or the gate
+- Open synthetic or probe issues to test auto-label, the gate, or the mill
