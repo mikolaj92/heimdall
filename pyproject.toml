@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "heimdall"
 version = "0.1.0"
-description = "CEO gateway. Small Unix atoms; observe-queue, dual-label-ready, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, craft-ready, craft-inbound, verdict-apply."
+description = "CEO gateway. Small Unix atoms; observe-queue, dual-label-ready, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, craft-ready, craft-inbound, verdict-apply, out-apply."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Mikolaj" }]
@@ -21,6 +21,7 @@ observe-blocked = "heimdall.observe_blocked:main"
 craft-ready = "heimdall.craft_ready:main"
 craft-inbound = "heimdall.craft_inbound:main"
 verdict-apply = "heimdall.verdict_apply:main"
+out-apply = "heimdall.out_apply:main"
 
 [dependency-groups]
 dev = [
