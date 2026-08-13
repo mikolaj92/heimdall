@@ -1,4 +1,4 @@
-# Heimdall label taxonomy — apply with scripts or gh; do not invent ad-hoc names.
+# Heimdall label taxonomy — apply with uv run sync-labels or gh; do not invent ad-hoc names.
 version: 1
 owner: heimdall
 namespaces:

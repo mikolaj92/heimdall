@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Advance work:* on issues linked from a pull request.
 
 Merged PRs that close an issue (GitHub closing keywords in title/body,
@@ -10,10 +9,10 @@ work:blocked is left alone. Idempotent if already on the target.
 
 From the repo root:
 
-  python3 scripts/advance-work-labels.py              # Actions: PR opened/closed
-  python3 scripts/advance-work-labels.py --pr 5       # re-run on a PR (merge path)
-  python3 scripts/advance-work-labels.py --self-test
-  python3 scripts/advance-work-labels.py --dry-run --event event.json
+  uv run advance-work-labels              # Actions: PR opened/closed
+  uv run advance-work-labels --pr 5       # re-run on a PR (merge path)
+  uv run advance-work-labels --self-test
+  uv run advance-work-labels --dry-run --event event.json
 
 Repo: --repo OWNER/NAME, else GH_REPO / GITHUB_REPOSITORY, else `gh repo view`.
 On pull_request opened/closed, .github/workflows/advance-work-labels.yml runs this.
@@ -30,8 +29,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-LABELS_YML = ROOT / "labels.yml"
+from heimdall.sync_labels import default_labels_yml, taxonomy_names
 
 WORK_NS = "work:"
 WORK_READY = "work:ready"
@@ -56,23 +54,6 @@ CLOSING_RE = re.compile(
 class Plan:
     add: frozenset[str]
     remove: frozenset[str]
-
-
-def taxonomy_names(path: Path) -> frozenset[str]:
-    """Label names from labels.yml (`ns:name` only; skip namespace titles)."""
-    names: set[str] = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("- name:"):
-            continue
-        name = stripped[len("- name:") :].strip()
-        if len(name) >= 2 and name[0] == name[-1] and name[0] in {'"', "'"}:
-            name = name[1:-1]
-        if ":" in name:
-            names.add(name)
-    if not names:
-        raise SystemExit(f"no taxonomy labels parsed from {path}")
-    return frozenset(names)
 
 
 def detect_repo() -> str:
@@ -268,7 +249,7 @@ def target_for(mode: str) -> tuple[str, frozenset[str]]:
 
 
 def self_test() -> None:
-    allowed = taxonomy_names(LABELS_YML)
+    allowed = taxonomy_names(default_labels_yml())
     assert WORK_READY in allowed and WORK_DOING in allowed and WORK_DONE in allowed
     assert "work:blocked" in allowed
     assert "bug" not in allowed and "enhancement" not in allowed
@@ -373,7 +354,7 @@ def advance(
         apply_plan(repo, number, plan, dry_run=dry_run)
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", help="OWNER/NAME (default: current gh repo)")
     parser.add_argument("--pr", type=int, help="pull request number (else GITHUB_EVENT_PATH)")
@@ -385,13 +366,13 @@ def main() -> int:
     )
     parser.add_argument("--dry-run", action="store_true", help="print actions only")
     parser.add_argument("--self-test", action="store_true", help="run parser fixtures")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.self_test:
         self_test()
         return 0
 
-    allowed = taxonomy_names(LABELS_YML)
+    allowed = taxonomy_names(default_labels_yml())
     repo = args.repo or detect_repo()
 
     graphql: set[int] = set()

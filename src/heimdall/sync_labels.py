@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Apply labels.yml onto a GitHub repo (idempotent).
 
 Creates or updates only names from labels.yml. Never creates GitHub's
@@ -7,9 +6,9 @@ issue, help wanted, invalid, question, wontfix).
 
 From the repo root, with gh authenticated to the target repo:
 
-  python3 scripts/sync-labels.py            # upsert taxonomy
-  python3 scripts/sync-labels.py --prune    # also delete labels not in labels.yml
-  python3 scripts/sync-labels.py --dry-run  # print actions only
+  uv run sync-labels            # upsert taxonomy
+  uv run sync-labels --prune    # also delete labels not in labels.yml
+  uv run sync-labels --dry-run  # print actions only
 
 Repo: --repo OWNER/NAME, else GH_REPO / GITHUB_REPOSITORY, else `gh repo view`.
 On push of labels.yml to main, .github/workflows/sync-labels.yml runs --prune.
@@ -38,8 +37,12 @@ DEFAULT_GITHUB_LABELS = frozenset(
     }
 )
 
-ROOT = Path(__file__).resolve().parents[1]
-LABELS_YML = ROOT / "labels.yml"
+
+def default_labels_yml() -> Path:
+    here = Path.cwd() / "labels.yml"
+    if here.is_file():
+        return here
+    return Path(__file__).resolve().parents[2] / "labels.yml"
 
 
 def parse_value(raw: str) -> str:
@@ -105,6 +108,11 @@ def parse_labels_yml(path: Path) -> list[dict[str, str]]:
     return out
 
 
+def taxonomy_names(path: Path) -> frozenset[str]:
+    """Label names from labels.yml (`ns:name` only; skip namespace titles)."""
+    return frozenset(lab["name"] for lab in parse_labels_yml(path))
+
+
 def gh(args: list[str], *, repo: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["gh", *args, "-R", repo],
@@ -132,7 +140,15 @@ def list_label_names(repo: str) -> set[str]:
     return {item["name"] for item in json.loads(proc.stdout)}
 
 
-def main() -> int:
+def refuse_github_defaults(wanted: list[dict[str, str]]) -> None:
+    for lab in wanted:
+        if lab["name"].lower() in DEFAULT_GITHUB_LABELS:
+            raise SystemExit(
+                f"refusing to create deleted GitHub default label: {lab['name']}"
+            )
+
+
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", help="OWNER/NAME (default: current gh repo)")
     parser.add_argument(
@@ -141,14 +157,10 @@ def main() -> int:
         help="delete labels that are not in labels.yml (including GitHub defaults)",
     )
     parser.add_argument("--dry-run", action="store_true", help="print actions only")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
-    wanted = parse_labels_yml(LABELS_YML)
-    for lab in wanted:
-        if lab["name"].lower() in DEFAULT_GITHUB_LABELS:
-            raise SystemExit(
-                f"refusing to create deleted GitHub default label: {lab['name']}"
-            )
+    wanted = parse_labels_yml(default_labels_yml())
+    refuse_github_defaults(wanted)
 
     repo = args.repo or detect_repo()
     wanted_names = {lab["name"] for lab in wanted}
