@@ -41,6 +41,8 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `influenzer-handoff` (`uv run influenzer-handoff --repo OWNER/NAME --issue N --artifact URL --story story:ship`) files a `bifrost:in` triage issue on Influenzer after source `bifrost:out` + `verdict:pass` (reuse craft-inbound; never `work:ready`; also `--pr N`; optional `--comment` / `--to-repo`); not on the Fala monitor path.
 
+`cleared-close` (`uv run cleared-close --repo OWNER/NAME --issue N --handoff M`) closes a cleared source issue (`bifrost:out` + `verdict:pass`) once the Influenzer inbound exists. Comments a pointer to `{to-repo}#M` (default `mikolaj92/influenzer`), then closes N. Issues only. Fail closed. Does not call Influenzer, wake the mill, or mail. Mill untouched. Not on the Fala monitor path.
+
 `observe-verdict` (`uv run observe-verdict`) prints a JSON envelope of open PRs Heimdall should look at for QA/verdict: all open PRs on heimdall, plus mill-looking open PRs on catalog repos (`ai:` labels or `ai/` heads). Read-only. Does not merge, comment, label, or wake the mill.
 
 `observe-outbound` (`uv run observe-outbound`) prints a JSON envelope of open GitHub items that claim outbound (`bifrost:out`) but must not ship yet (missing `verdict:pass`), surveying heimdall issues+PRs and the mill catalog (never heimdall twice); read-only — does not merge, comment, label, wake the mill, or call Influenzer.
@@ -51,7 +53,7 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `observe-inbound` (`uv run observe-inbound`) prints a JSON envelope of open Heimdall issues in the inbound triage queue (`bifrost:in` that is not yet `work:ready` and not `bifrost:out`). Default `mikolaj92/heimdall`; `--heimdall OWNER/NAME`. One repo only; does not fetch the mill catalog. `bifrost:in` is not `work:ready`. Read-only — does not apply `work:ready`, wake the mill, SSH, or mail.
 
-`observe-cleared` (`uv run observe-cleared`) prints a JSON envelope of open GitHub items that may ship (`bifrost:out` and `verdict:pass`), surveying heimdall issues+PRs and the mill catalog (never heimdall twice). Pair of `observe-outbound` (must not ship). Read-only — does not merge, comment, label, wake the mill, or call Influenzer. `influenzer-handoff` / `out-apply` stay mutators.
+`observe-cleared` (`uv run observe-cleared`) prints a JSON envelope of open GitHub items that may ship (`bifrost:out` and `verdict:pass`), surveying heimdall issues+PRs and the mill catalog (never heimdall twice). Pair of `observe-outbound` (must not ship). Read-only — does not merge, comment, label, wake the mill, or call Influenzer. `influenzer-handoff` / `out-apply` / `cleared-close` stay mutators.
 
 Fala (`mikolaj92/Fala`) conducts the monitor path in [`fala-package.toml`](fala-package.toml). Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.
 
