@@ -25,6 +25,8 @@ Bots talk to Heimdall, not to the CEO. Heimdall triages and routes.
 
 Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including heimdall). Unix mill: mill-catalog repos + `ai:ready`. Dual-label is one craft rule in [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md), not a coordination brain. Do not add heimdall to the mill catalog. Do not add `ai:*` to [`labels.yml`](labels.yml).
 
+`observe-queue` (`uv run observe-queue`) prints a JSON envelope of that bus. Heimdall: open `work:ready` / `work:doing` / `work:blocked` and open PRs. Mill catalog (lokay `repos.mikolaj92.yaml` via `gh api`, never heimdall): open `ai:ready` / `ai:in-progress` / `work:ready` / `work:doing`, plus mill-looking open PRs (`ai:pr-opened` or similar). Read-only. Does not apply labels, wake the mill, or steer.
+
 Email is not the internal bot bus.
 
 ## Do not
