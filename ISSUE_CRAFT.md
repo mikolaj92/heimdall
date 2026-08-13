@@ -55,7 +55,7 @@ Lokay moves `work:ready` → `work:doing` → `work:done` (or `work:blocked`). A
 
 Dropdown values on those forms are auto-applied as taxonomy labels by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml) (`uv run auto-label-issue`) on issue opened or edited. Humans do not need a second click for `source:*` / `signal:*` / chosen `pri:*`, or to replace `verdict:hold` when the inbound dropdown is not hold.
 
-Auto-label is not craft. `work:ready` still requires every required field above. Inbound stays `verdict:hold` until Heimdall decides; inbound auto-label never applies `work:ready`. Promoting an existing complete issue is `uv run ready-apply --repo OWNER/NAME --issue N`, not auto-label. `uv run observe-inbound` lists open `bifrost:in` that is not yet `work:ready` and not outbound. Catalog `ai:ready` is applied by Heimdall at craft time, not by auto-label.
+Auto-label is not craft. `work:ready` still requires every required field above. Inbound stays `verdict:hold` until Heimdall decides; inbound auto-label never applies `work:ready`. After `craft-ready` of a *new* issue, close the superseded inbound with `uv run inbound-close --repo OWNER/NAME --issue N --ready M`; do not auto-label or auto-close. Promoting an existing complete issue in place is `uv run ready-apply --repo OWNER/NAME --issue N`, not auto-label. `uv run observe-inbound` lists open `bifrost:in` that is not yet `work:ready` and not outbound. Catalog `ai:ready` is applied by Heimdall at craft time, not by auto-label.
 
 ## Do not
 
