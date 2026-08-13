@@ -67,7 +67,7 @@ Source of truth: [`LABELS.md`](LABELS.md) · machine-readable: [`labels.yml`](la
 
 Namespaces: `bifrost` · `verdict` · `signal` · `source` · `story` · `work` · `pri`
 
-Templates: `.github/ISSUE_TEMPLATE/` (`inbound`, `work-ready`); dropdowns are auto-labeled by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml). Auto-label is not craft — see [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md). Lokay PRs: [`.github/pull_request_template.md`](.github/pull_request_template.md).
+Templates: `.github/ISSUE_TEMPLATE/` (`inbound`, `work-ready`); dropdowns are auto-labeled by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml). Auto-label is not craft — see [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md). Lokay PRs: [`.github/pull_request_template.md`](.github/pull_request_template.md). Merged PRs that `Closes #N` move `work:ready`/`work:doing` → `work:done` ([`.github/workflows/advance-work-labels.yml`](.github/workflows/advance-work-labels.yml)).
 
 Apply taxonomy (idempotent; does not recreate GitHub defaults such as `bug` / `enhancement`): from the repo root, `python3 scripts/sync-labels.py` upserts from `labels.yml`; add `--prune` to delete any label not in that file. On push of `labels.yml` to `main`, `.github/workflows/sync-labels.yml` runs the same with `--prune`. Requires `gh` authenticated to the repo.
 

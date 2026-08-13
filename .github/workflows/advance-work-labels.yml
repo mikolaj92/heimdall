@@ -1,0 +1,25 @@
+name: Advance work labels
+
+on:
+  pull_request:
+    types: [opened, closed]
+
+concurrency:
+  group: work-queue-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  label:
+    if: github.event.action == 'opened' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Advance work:* from PR links
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python3 scripts/advance-work-labels.py
