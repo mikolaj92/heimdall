@@ -67,7 +67,7 @@ Source of truth: [`LABELS.md`](LABELS.md) · machine-readable: [`labels.yml`](la
 
 Namespaces: `bifrost` · `verdict` · `signal` · `source` · `story` · `work` · `pri`
 
-Templates: `.github/ISSUE_TEMPLATE/` (`inbound`, `work-ready`); dropdowns are auto-labeled by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml).
+Templates: `.github/ISSUE_TEMPLATE/` (`inbound`, `work-ready`); dropdowns are auto-labeled by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml). Auto-label is not craft — see [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md).
 
 Apply taxonomy (idempotent; does not recreate GitHub defaults such as `bug` / `enhancement`): from the repo root, `python3 scripts/sync-labels.py` upserts from `labels.yml`; add `--prune` to delete any label not in that file. On push of `labels.yml` to `main`, `.github/workflows/sync-labels.yml` runs the same with `--prune`. Requires `gh` authenticated to the repo.
 
