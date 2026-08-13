@@ -51,6 +51,8 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `observe-inbound` (`uv run observe-inbound`) prints a JSON envelope of open Heimdall issues in the inbound triage queue (`bifrost:in` that is not yet `work:ready` and not `bifrost:out`). Default `mikolaj92/heimdall`; `--heimdall OWNER/NAME`. One repo only; does not fetch the mill catalog. `bifrost:in` is not `work:ready`. Read-only — does not apply `work:ready`, wake the mill, SSH, or mail.
 
+`observe-cleared` (`uv run observe-cleared`) prints a JSON envelope of open GitHub items that may ship (`bifrost:out` and `verdict:pass`), surveying heimdall issues+PRs and the mill catalog (never heimdall twice). Pair of `observe-outbound` (must not ship). Read-only — does not merge, comment, label, wake the mill, or call Influenzer. `influenzer-handoff` / `out-apply` stay mutators.
+
 Fala (`mikolaj92/Fala`) conducts the monitor path in [`fala-package.toml`](fala-package.toml). Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.
 
 Email is not the internal bot bus.
