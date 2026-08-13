@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.0.0
       - name: Advance work:* from PR links
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
