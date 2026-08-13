@@ -5,12 +5,12 @@ body:
   - type: markdown
     attributes:
       value: |
-        Heimdall triage. Apply matching `source:*` and `signal:*` labels from LABELS.md. This template sets `bifrost:in` and `verdict:hold`. Do not apply `work:ready` until ISSUE_CRAFT.md is complete.
+        Heimdall triage. This template sets `bifrost:in` and `verdict:hold`. Dropdowns auto-apply matching `source:*` / `signal:*` (and replace `verdict:hold` if the proposed verdict is not hold). Do not apply `work:ready` until ISSUE_CRAFT.md is complete.
   - type: dropdown
     id: source
     attributes:
       label: Source
-      description: Where the signal came from. Apply the matching `source:*` label.
+      description: Where the signal came from.
       options:
         - "source:github"
         - "source:x"
@@ -24,7 +24,7 @@ body:
     id: signal
     attributes:
       label: Signal kind
-      description: What this inbound is. Apply the matching `signal:*` label.
+      description: What this inbound is.
       options:
         - "signal:feedback"
         - "signal:bug"

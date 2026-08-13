@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Lokay executes from this issue only — no chat, no email. Fill every field per ISSUE_CRAFT.md. Template applies `work:ready`, `pri:p2`, `bifrost:in`. If priority is not p2, change the `pri:*` label to match. Add `verdict:*` as needed. Incomplete → use Inbound and `verdict:hold`.
+        Lokay executes from this issue only — no chat, no email. Fill every field per ISSUE_CRAFT.md. Template applies `work:ready`, `pri:p2`, `bifrost:in`. Dropdown auto-replaces `pri:p2` if another `pri:*` is chosen. Add `verdict:*` as needed. Incomplete → use Inbound and `verdict:hold`.
   - type: textarea
     id: problem
     attributes:
@@ -53,7 +53,7 @@ body:
     id: priority
     attributes:
       label: Priority
-      description: Apply the matching `pri:*` label. Template defaults to `pri:p2`.
+      description: Urgency. Template defaults to `pri:p2`.
       options:
         - "pri:p0"
         - "pri:p1"
