@@ -1,0 +1,72 @@
+name: Inbound
+description: Triage a signal. Not a Lokay handoff.
+labels: ["bifrost:in", "verdict:hold"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Heimdall triage. Apply matching `source:*` and `signal:*` labels from LABELS.md. This template sets `bifrost:in` and `verdict:hold`. Do not apply `work:ready` until ISSUE_CRAFT.md is complete.
+  - type: dropdown
+    id: source
+    attributes:
+      label: Source
+      description: Where the signal came from. Apply the matching `source:*` label.
+      options:
+        - "source:github"
+        - "source:x"
+        - "source:bluesky"
+        - "source:mastodon"
+        - "source:linkedin"
+        - "source:other"
+    validations:
+      required: true
+  - type: dropdown
+    id: signal
+    attributes:
+      label: Signal kind
+      description: What this inbound is. Apply the matching `signal:*` label.
+      options:
+        - "signal:feedback"
+        - "signal:bug"
+        - "signal:feature"
+        - "signal:question"
+        - "signal:praise"
+        - "signal:noise"
+    validations:
+      required: true
+  - type: textarea
+    id: summary
+    attributes:
+      label: Signal
+      description: Short summary plus original quoted or linked. Not a Lokay spec.
+      placeholder: Who / what / link …
+    validations:
+      required: true
+  - type: textarea
+    id: fit
+    attributes:
+      label: Fit check
+      description: In repo / product scope? Which `owner/name` if it became work? Out of scope → `verdict:reject`, no `work:*`.
+      placeholder: In scope for … / out of scope because …
+    validations:
+      required: true
+  - type: dropdown
+    id: verdict
+    attributes:
+      label: Proposed verdict
+      description: Intended gate. Leave the issue on `verdict:hold` until Heimdall applies the final label. Incomplete work is never `work:ready`.
+      options:
+        - "verdict:hold"
+        - "verdict:pass"
+        - "verdict:reject"
+        - "verdict:needs-scout"
+      default: 0
+    validations:
+      required: true
+  - type: checkboxes
+    id: triage_ok
+    attributes:
+      label: Gate
+      options:
+        - label: Not handing to Lokay. No `work:ready` until the craft contract is complete.
+          required: true
