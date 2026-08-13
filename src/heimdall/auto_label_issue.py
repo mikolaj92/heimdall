@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Apply taxonomy labels from inbound / work-ready issue-form dropdowns.
 
 GitHub renders each dropdown as `### Heading` then the chosen option
@@ -11,10 +10,10 @@ GitHub renders each dropdown as `### Heading` then the chosen option
 
 Idempotent. From the repo root:
 
-  python3 scripts/auto-label-issue.py              # Actions: issues opened/edited
-  python3 scripts/auto-label-issue.py --issue 12   # re-run on an existing issue
-  python3 scripts/auto-label-issue.py --self-test
-  python3 scripts/auto-label-issue.py --dry-run --body-file body.md --current-labels bifrost:in,verdict:hold
+  uv run auto-label-issue              # Actions: issues opened/edited
+  uv run auto-label-issue --issue 12   # re-run on an existing issue
+  uv run auto-label-issue --self-test
+  uv run auto-label-issue --dry-run --body-file body.md --current-labels bifrost:in,verdict:hold
 
 Repo: --repo OWNER/NAME, else GH_REPO / GITHUB_REPOSITORY, else `gh repo view`.
 On issue opened/edited, .github/workflows/auto-label-issues.yml runs this.
@@ -31,8 +30,8 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[1]
-LABELS_YML = ROOT / "labels.yml"
+from heimdall.sync_labels import default_labels_yml, taxonomy_names
+
 HEADING_RE = re.compile(r"^###\s+(.+?)\s*$", re.MULTILINE)
 
 INBOUND_HEADINGS = ("Source", "Signal kind")
@@ -51,23 +50,6 @@ WORK_READY_FIELDS = {
 class Plan:
     add: frozenset[str]
     remove: frozenset[str]
-
-
-def taxonomy_names(path: Path) -> frozenset[str]:
-    """Label names from labels.yml (`ns:name` only; skip namespace titles)."""
-    names: set[str] = set()
-    for line in path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-        if not stripped.startswith("- name:"):
-            continue
-        name = stripped[len("- name:") :].strip()
-        if len(name) >= 2 and name[0] == name[-1] and name[0] in {'"', "'"}:
-            name = name[1:-1]
-        if ":" in name:
-            names.add(name)
-    if not names:
-        raise SystemExit(f"no taxonomy labels parsed from {path}")
-    return frozenset(names)
 
 
 def parse_issue_form(body: str) -> dict[str, str]:
@@ -210,7 +192,7 @@ def apply_plan(repo: str, number: int, plan: Plan, *, dry_run: bool) -> None:
 
 
 def self_test() -> None:
-    allowed = taxonomy_names(LABELS_YML)
+    allowed = taxonomy_names(default_labels_yml())
     assert "source:github" in allowed and "signal:bug" in allowed
     assert "bug" not in allowed and "enhancement" not in allowed
 
@@ -280,7 +262,7 @@ def self_test() -> None:
     print("ok: self-test")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", help="OWNER/NAME (default: current gh repo)")
     parser.add_argument("--issue", type=int, help="issue number (else GITHUB_EVENT_PATH)")
@@ -293,13 +275,13 @@ def main() -> int:
     parser.add_argument("--event", type=Path, help="GitHub event JSON (default: GITHUB_EVENT_PATH)")
     parser.add_argument("--dry-run", action="store_true", help="print actions only")
     parser.add_argument("--self-test", action="store_true", help="run parser fixtures")
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
 
     if args.self_test:
         self_test()
         return 0
 
-    allowed = taxonomy_names(LABELS_YML)
+    allowed = taxonomy_names(default_labels_yml())
     repo = args.repo or detect_repo()
 
     if args.body_file is not None:
