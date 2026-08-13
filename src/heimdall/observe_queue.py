@@ -10,12 +10,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any, Callable
 
 ATOM = "observe-queue"
+FALA_REACTION = "github.observe"
 HEIMDALL = "mikolaj92/heimdall"
 CATALOG_REPO = "mikolaj92/lokay"
 CATALOG_PATH = "repos.mikolaj92.yaml"
@@ -59,8 +62,37 @@ def err(message: str, **fields: Any) -> dict[str, Any]:
     return {"ok": False, "atom": ATOM, "error": message, **fields}
 
 
-def emit(payload: dict[str, Any]) -> None:
+def write_fala_result(payload: dict[str, Any], *, kind: str) -> None:
+    """If Fala set FALA_EFFECTOR_OUTPUT_DIR, write result.json. No Fala import."""
+    output_dir = os.environ.get("FALA_EFFECTOR_OUTPUT_DIR")
+    if not output_dir:
+        return
+    path = Path(output_dir) / "result.json"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "values": payload,
+                "associations": [],
+                "reactions": [
+                    {
+                        "kind": kind,
+                        "media_type": "application/json",
+                        "value": payload,
+                    }
+                ],
+                "metadata": {},
+            },
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def emit(payload: dict[str, Any], *, fala_kind: str = FALA_REACTION) -> None:
     sys.stdout.write(json.dumps(payload, ensure_ascii=False) + "\n")
+    write_fala_result(payload, kind=fala_kind)
 
 
 def emit_exit(payload: dict[str, Any]) -> int:

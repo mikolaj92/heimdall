@@ -1,0 +1,58 @@
+version = "2"
+id = "heimdall"
+title = "Heimdall monitor"
+description = "Parent monitors the GitHub bus, then closes the mill dual-label gap. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake or steer the Lokay mill."
+tags = ["heimdall", "monitor"]
+
+[[impulse_types]]
+id = "github.bus"
+title = "GitHub coordination bus tick"
+media_types = ["application/json"]
+value_schema = { type = "object" }
+
+[[reaction_kinds]]
+id = "github.observe"
+title = "Read-only GitHub bus envelope"
+media_types = ["application/json"]
+
+[[reaction_kinds]]
+id = "github.dual_label"
+title = "Catalog work:ready dual-label pass"
+media_types = ["application/json"]
+
+[[capabilities]]
+id = "observe_queue"
+title = "Read GitHub coordination bus; does not apply labels or wake the mill"
+accepts_impulse_types = ["github.bus"]
+emits_reaction_kinds = ["github.observe"]
+
+[[capabilities]]
+id = "dual_label_pass"
+title = "Apply mill ai:ready on catalog work:ready; no-op on heimdall; does not wake the mill"
+accepts_reaction_kinds = ["github.observe"]
+emits_reaction_kinds = ["github.dual_label"]
+
+[[correlation_paths]]
+id = "monitor"
+title = "Observe bus, then close dual-label gap"
+description = "Fala conducts observe-queue then dual-label-pass. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
+
+[[correlation_paths.effectors]]
+id = "observe"
+capability = "observe_queue"
+adapter = { kind = "subprocess", command = ["uv", "run", "observe-queue"], cwd = "." }
+
+[[correlation_paths.effectors]]
+id = "dual_label"
+capability = "dual_label_pass"
+conduction = ["observe"]
+adapter = { kind = "subprocess", command = ["uv", "run", "dual-label-pass"], cwd = "." }
+
+# Fala-owned journal. Effectors never open this file.
+[runtime.backend]
+kind = "sqlite"
+path = "runtime.db"
+
+[runtime.reaction_store]
+kind = "filesystem"
+root = "artifacts/fala-reactions"
