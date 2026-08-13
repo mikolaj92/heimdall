@@ -29,6 +29,8 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `dual-label-ready` (`uv run dual-label-ready --repo OWNER/NAME --issue N`) applies mill `ai:ready` on a catalog issue that already has `work:ready`. No-op on heimdall. Does not wake the mill.
 
+`craft-ready` (`uv run craft-ready --file spec.json`) creates a complete `work:ready` issue; it is not on the Fala monitor path.
+
 `observe-verdict` (`uv run observe-verdict`) prints a JSON envelope of open PRs Heimdall should look at for QA/verdict: all open PRs on heimdall, plus mill-looking open PRs on catalog repos (`ai:` labels or `ai/` heads). Read-only. Does not merge, comment, label, or wake the mill.
 
 Fala (`mikolaj92/Fala`) composes observe + dual-label + observe-verdict as one monitor path ([`fala-package.toml`](fala-package.toml)): `uv run observe-queue`, then `uv run dual-label-pass` (conduction after observe), then `uv run observe-verdict` (conduction after dual-label-pass). The pass applies mill `ai:ready` on catalog issues that already have `work:ready`. Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.

@@ -34,7 +34,7 @@ One primary `work:*` and one `pri:*`. Do not combine `work:ready` with `verdict:
 
 ### Mill catalog (one rule)
 
-On a mill-catalog repo ([mikolaj92/lokay `repos.mikolaj92.yaml`](https://github.com/mikolaj92/lokay/blob/main/repos.mikolaj92.yaml)), also apply `ai:ready`. The mill surveys that label, not `work:ready`. Dual-label is this rule, not a coordination brain. `uv run dual-label-ready --repo OWNER/NAME --issue N` applies that mill label when `work:ready` is already present (no-op on heimdall; idempotent if `ai:ready` is already there).
+On a mill-catalog repo ([mikolaj92/lokay `repos.mikolaj92.yaml`](https://github.com/mikolaj92/lokay/blob/main/repos.mikolaj92.yaml)), also apply `ai:ready`. The mill surveys that label, not `work:ready`. Dual-label is this rule, not a coordination brain. `uv run dual-label-ready --repo OWNER/NAME --issue N` applies that mill label when `work:ready` is already present (no-op on heimdall; idempotent if `ai:ready` is already there). `uv run craft-ready --file spec.json` (stdin if `--file` omitted) files a complete `work:ready` issue from JSON (fail closed on missing fields; catalog also `ai:ready`; heimdall `work:ready` only).
 
 Do not add heimdall to that catalog. Do not add `ai:*` to [`labels.yml`](labels.yml) — mill-owned; mapping lives here. heimdall itself: `work:ready` only.
 
