@@ -1,7 +1,7 @@
 version = "2"
 id = "heimdall"
 title = "Heimdall monitor"
-description = "Parent monitors the GitHub bus, closes the mill dual-label gap, lists open PRs for QA, lists outbound that must not ship yet, lists stuck blocked issues, watches Influenzer's GitHub, lists Heimdall inbound not yet handed to Lokay, then lists outbound that may ship. Not a Fala host — the Mojo correlator in mikolaj92/Fala conducts this package. Does not wake tick or mill."
+description = "Declared monitor path: observe the GitHub bus, close the mill dual-label gap, list open PRs for QA, list outbound that must not ship yet, list stuck blocked issues, watch Influenzer's GitHub, list Heimdall inbound not yet handed to Lokay, then list outbound that may ship. Not a Fala host. Fala does not tick this package from this repo — run each effector by hand. Does not wake tick or mill."
 tags = ["heimdall", "monitor"]
 
 [[impulse_types]]
@@ -101,7 +101,7 @@ emits_reaction_kinds = ["github.observe_cleared"]
 [[correlation_paths]]
 id = "monitor"
 title = "Observe bus, close dual-label gap, observe PRs for verdict, outbound that must not ship, stuck blocked issues, Influenzer GitHub, Heimdall inbound triage, then outbound that may ship"
-description = "Fala conducts observe-queue, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, observe-influenzer, observe-inbound, then observe-cleared. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Mill autonomy stays mill."
+description = "Declared order: observe-queue, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, observe-influenzer, observe-inbound, then observe-cleared. Dual-label-pass surveys catalog itself (subprocess adapters do not pipe stdout). Fala does not tick this path from this repo. Mill autonomy stays mill."
 
 [[correlation_paths.effectors]]
 id = "observe"
