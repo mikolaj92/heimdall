@@ -41,3 +41,6 @@ packages = ["src/heimdall"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[tool.lokay]
+test = ["uv", "run", "pytest", "-q"]
