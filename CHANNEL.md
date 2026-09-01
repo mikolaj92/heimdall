@@ -53,7 +53,7 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `observe-cleared` (`uv run observe-cleared`) prints a JSON envelope of open GitHub items that may ship (`bifrost:out` and `verdict:pass`), surveying heimdall issues+PRs and the mill catalog (never heimdall twice). Pair of `observe-outbound` (must not ship). Read-only — does not merge, comment, label, wake the mill, or call Influenzer. `influenzer-handoff` / `out-apply` stay mutators.
 
-Fala (`mikolaj92/Fala`) conducts the monitor path in [`fala-package.toml`](fala-package.toml). Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.
+[`fala-package.toml`](fala-package.toml) declares `correlation_paths.id = "monitor"` (observe-queue → dual-label-pass → observe-verdict → observe-outbound → observe-blocked → observe-influenzer → observe-inbound → observe-cleared). That file is the order. Fala does not tick it from this repo: no LaunchAgent, no mill hook, no host command. From the repo root, run each effector by hand (`uv run observe-queue`, `uv run dual-label-pass`, …). Dual-label on the mill catalog closes only then. Self-check: JSON on stdout; `FALA_EFFECTOR_OUTPUT_DIR` only if a Fala host sets it (this repo does not). Parent monitors; it does not wake, SSH, or steer the mill. Mill autonomy stays mill.
 
 Email is not the internal bot bus.
 
