@@ -31,7 +31,7 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `craft-ready` (`uv run craft-ready --file spec.json`) creates a complete `work:ready` issue; it is not on the Fala monitor path.
 
-`ready-apply` (`uv run ready-apply --repo OWNER/NAME --issue N`) promotes an existing issue that already satisfies ISSUE_CRAFT to `work:ready` (catalog also `ai:ready`). Fail closed on stubs, missing fields, or blocking verdicts. `bifrost:in` is not automatically `work:ready`. Does not create a second issue or wake the mill. Not on the Fala monitor path.
+`ready-apply` (`uv run ready-apply --repo OWNER/NAME --issue N`) promotes an existing issue that already satisfies ISSUE_CRAFT to `work:ready` (catalog also `ai:ready`). Fail closed on stubs, missing fields, blocking verdicts, or anything other than exactly one taxonomy-owned `bifrost:in` / `bifrost:out` direction. `bifrost:in` is not automatically `work:ready`. Does not create a second issue or wake the mill. Not on the Fala monitor path.
 
 `craft-inbound` (`uv run craft-inbound --file spec.json`) files a `bifrost:in` triage issue (inbound template; never `work:ready`); it is not on the Fala monitor path.
 
