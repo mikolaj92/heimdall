@@ -108,7 +108,7 @@ def test_heimdall_does_not_add_ai_ready_or_fetch_catalog() -> None:
             apis.append(args)
             raise AssertionError("heimdall promote must not fetch mill catalog")
         if args[:2] == ["issue", "view"]:
-            return _view(7, spec, "pri:p2")
+            return _view(7, spec, "pri:p2", "bifrost:in")
         if args[:2] == ["issue", "edit"]:
             return ""
         raise AssertionError(args)
@@ -175,7 +175,7 @@ def test_catalog_calls_dual_label_after_work_ready(monkeypatch: pytest.MonkeyPat
         if args[:1] == ["api"]:
             raise AssertionError("ready-apply must not fetch catalog itself")
         if args[:2] == ["issue", "view"]:
-            return _view(10, spec, "pri:p2")
+            return _view(10, spec, "pri:p2", "bifrost:in")
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""
@@ -213,7 +213,7 @@ def test_incomplete_body_fails_without_edit() -> None:
                     "number": 7,
                     "title": spec["title"],
                     "body": body,
-                    "labels": [{"name": "pri:p2"}],
+                    "labels": [{"name": "pri:p2"}, {"name": "bifrost:in"}],
                 }
             )
         if args[:2] == ["issue", "edit"]:
@@ -234,7 +234,7 @@ def test_stub_body_fails_without_edit() -> None:
 
     def run(args: list[str]) -> str:
         if args[:2] == ["issue", "view"]:
-            return _view(7, spec, "pri:p2")
+            return _view(7, spec, "pri:p2", "bifrost:in")
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""
@@ -249,6 +249,50 @@ def test_stub_body_fails_without_edit() -> None:
     payload = ready_apply(HEIMDALL, 7, run=lambda args: _view(7, spec_tbd, "pri:p2"))
     assert payload["ok"] is False
     assert "stub" in payload["error"]
+
+
+def test_missing_bifrost_fails_without_edit() -> None:
+    spec = _spec(repo=HEIMDALL)
+    edits: list[list[str]] = []
+
+    def run(args: list[str]) -> str:
+        if args[:2] == ["issue", "view"]:
+            return _view(7, spec, "pri:p2")
+        if args[:2] == ["issue", "edit"]:
+            edits.append(args)
+            return ""
+        raise AssertionError(args)
+
+    payload = ready_apply(HEIMDALL, 7, run=run)
+    assert payload["ok"] is False
+    assert payload["error"] == "missing bifrost direction"
+    assert edits == []
+
+
+def test_multiple_or_unknown_bifrost_fails_without_edit() -> None:
+    spec = _spec(repo=HEIMDALL)
+    for direction_labels, expected in (
+        (("bifrost:in", "bifrost:out"), "multiple bifrost directions"),
+        (("bifrost:sideways",), "unknown bifrost direction"),
+    ):
+        edits: list[list[str]] = []
+
+        def run(
+            args: list[str],
+            directions: tuple[str, ...] = direction_labels,
+            mutations: list[list[str]] = edits,
+        ) -> str:
+            if args[:2] == ["issue", "view"]:
+                return _view(7, spec, "pri:p2", *directions)
+            if args[:2] == ["issue", "edit"]:
+                mutations.append(args)
+                return ""
+            raise AssertionError(args)
+
+        payload = ready_apply(HEIMDALL, 7, run=run)
+        assert payload["ok"] is False
+        assert expected in payload["error"]
+        assert edits == []
 
 
 def test_bifrost_in_with_verdict_hold_fails_without_work_ready() -> None:
@@ -296,7 +340,7 @@ def test_already_work_ready_is_idempotent() -> None:
 def test_already_work_ready_still_dual_labels_catalog() -> None:
     _reset_catalog()
     spec = _spec(repo="mikolaj92/lokay")
-    labels = ["work:ready", "pri:p2"]
+    labels = ["work:ready", "pri:p2", "bifrost:in"]
     edits: list[list[str]] = []
 
     def run(args: list[str]) -> str:
@@ -361,7 +405,7 @@ def test_missing_repo_heading_uses_cli_repo() -> None:
                     "number": 7,
                     "title": spec["title"],
                     "body": body,
-                    "labels": [{"name": "pri:p2"}],
+                    "labels": [{"name": "pri:p2"}, {"name": "bifrost:in"}],
                 }
             )
         if args[:2] == ["issue", "edit"]:
@@ -399,7 +443,7 @@ def test_repo_mismatch_fails_closed() -> None:
 
     def run(args: list[str]) -> str:
         if args[:2] == ["issue", "view"]:
-            return _view(7, spec, "pri:p2")
+            return _view(7, spec, "pri:p2", "bifrost:in")
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""
@@ -430,7 +474,7 @@ def test_gh_edit_error_is_not_success() -> None:
 
     def run(args: list[str]) -> str:
         if args[:2] == ["issue", "view"]:
-            return _view(7, spec, "pri:p2")
+            return _view(7, spec, "pri:p2", "bifrost:in")
         raise GhError("HTTP 422: Validation Failed")
 
     payload = ready_apply(HEIMDALL, 7, run=run)
@@ -459,7 +503,7 @@ def test_non_catalog_gets_work_ready_only() -> None:
         if args[:1] == ["api"]:
             return CATALOG_YAML
         if args[:2] == ["issue", "view"]:
-            return _view(1, spec, "pri:p2")
+            return _view(1, spec, "pri:p2", "bifrost:in")
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""
@@ -482,7 +526,7 @@ def test_catalog_error_after_work_ready_is_not_success() -> None:
         if args[:1] == ["api"]:
             raise GhError("API rate limit")
         if args[:2] == ["issue", "view"]:
-            return _view(10, spec, "pri:p2")
+            return _view(10, spec, "pri:p2", "bifrost:in")
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""

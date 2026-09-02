@@ -14,19 +14,19 @@ import argparse
 import json
 import re
 import sys
+from pathlib import Path
 from typing import Any
 
 from heimdall.craft_ready import (
-    BLOCKING_VERDICT,
     HEADINGS,
     PRI_LABELS,
-    REQUIRED,
     REPO_RE,
-    is_stub,
+    REQUIRED,
     validate,
 )
 from heimdall.dual_label_ready import WORK_READY, add_label, dual_label, is_heimdall
 from heimdall.observe_queue import HEIMDALL, GhError, GhFn, gh, gh_json, label_names
+from heimdall.out_apply import load_allowed
 
 ATOM = "ready-apply"
 HEADING_RE = re.compile(r"^###\s+(.+?)\s*$", re.MULTILINE)
@@ -76,6 +76,22 @@ def pick_unique(labels: list[str], allowed: frozenset[str], kind: str) -> tuple[
     if len(found) > 1:
         return None, f"multiple {kind}"
     return found[0], None
+
+
+def validate_direction(
+    labels: list[str], allowed: frozenset[str]
+) -> str | None:
+    """Require exactly one taxonomy-owned bifrost direction."""
+    bifrost = [label for label in labels if label.startswith("bifrost:")]
+    unknown = [label for label in bifrost if label not in allowed]
+    if unknown:
+        return f"unknown bifrost direction: {', '.join(sorted(unknown))}"
+    present = [label for label in bifrost if label in allowed]
+    if not present:
+        return "missing bifrost direction"
+    if len(present) != 1:
+        return "multiple bifrost directions"
+    return None
 
 
 def view_issue(repo: str, issue: int, *, run: GhFn) -> dict[str, Any]:
@@ -138,6 +154,7 @@ def ready_apply(
     issue: int,
     *,
     heimdall: str = HEIMDALL,
+    labels_yml: Path | None = None,
     run: GhFn | None = None,
 ) -> dict[str, Any]:
     """Apply work:ready on a complete existing issue. Fail closed on craft/gh errors."""
@@ -166,6 +183,14 @@ def ready_apply(
     message = validate(built)
     if message:
         return err(message, **base, labels=labels)
+
+    try:
+        bifrost_allowed, _ = load_allowed(labels_yml)
+    except ValueError as exc:
+        return err(str(exc), **base, labels=labels)
+    direction_error = validate_direction(labels, bifrost_allowed)
+    if direction_error:
+        return err(direction_error, **base, labels=labels)
 
     added: list[str] = []
     already: list[str] = []
@@ -226,7 +251,7 @@ def main(argv: list[str] | None = None) -> int:
         help="Heimdall OWNER/NAME (catalog exclude; work:ready only)",
     )
     args = parser.parse_args(argv)
-    import heimdall.observe_queue as observe_queue
+    from heimdall import observe_queue
 
     observe_queue._catalog_cache = None
     return emit_exit(
