@@ -35,6 +35,8 @@ Two Lokay surfaces. Do not conflate. Grok Bot teammate: `work:ready` (including 
 
 `craft-inbound` (`uv run craft-inbound --file spec.json`) files a `bifrost:in` triage issue (inbound template; never `work:ready`); it is not on the Fala monitor path.
 
+`inbound-close` (`uv run inbound-close --repo OWNER/NAME --issue N --ready M`) closes a superseded inbound with a pointer to an existing `work:ready` issue. `cleared-close` (`uv run cleared-close --repo OWNER/NAME --issue N --handoff M`) closes a cleared outbound source with a pointer to its existing Influenzer handoff. Both are explicit issue-only mutators, idempotent on closed sources, and outside the Fala monitor path.
+
 `verdict-apply` (`uv run verdict-apply --repo OWNER/NAME --issue N --verdict verdict:pass`) applies one `verdict:*` from [`labels.yml`](labels.yml) (also `--pr N`; optional `--comment`); not on the Fala monitor path.
 
 `out-apply` (`uv run out-apply --repo OWNER/NAME --issue N --artifact URL`) marks outbound that may ship (`bifrost:out` + `verdict:pass`; fail closed without an http(s) artifact URL; also `--pr N`; optional `--comment`); not on the Fala monitor path.

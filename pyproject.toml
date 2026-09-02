@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "heimdall"
 version = "0.1.0"
-description = "CEO gateway. Small Unix atoms; observe-queue, dual-label-ready, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, observe-influenzer, observe-inbound, observe-cleared, craft-ready, ready-apply, craft-inbound, verdict-apply, out-apply, influenzer-handoff, sync-labels, auto-label-issue, advance-work-labels."
+description = "CEO gateway. Small Unix atoms; observe-queue, dual-label-ready, dual-label-pass, observe-verdict, observe-outbound, observe-blocked, observe-influenzer, observe-inbound, observe-cleared, craft-ready, ready-apply, craft-inbound, verdict-apply, out-apply, influenzer-handoff, sync-labels, auto-label-issue, advance-work-labels, inbound-close, cleared-close."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Mikolaj" }]
@@ -30,6 +30,8 @@ influenzer-handoff = "heimdall.influenzer_handoff:main"
 sync-labels = "heimdall.sync_labels:main"
 auto-label-issue = "heimdall.auto_label_issue:main"
 advance-work-labels = "heimdall.advance_work_labels:main"
+inbound-close = "heimdall.inbound_close:main"
+cleared-close = "heimdall.cleared_close:main"
 
 [dependency-groups]
 dev = [
