@@ -26,7 +26,7 @@ Heimdall applies labels. Lokay reads `work:*`. Do not invent Heimdall names — 
 | `work:ready` | All required fields are filled. This is the only Heimdall execute signal. |
 | `pri:*` | Always, with `work:ready`. Default inbound that passed the gate: `pri:p2`. |
 | `bifrost:in` or `bifrost:out` | Anything Heimdall touches. Engineering handoff is almost always `bifrost:in`. |
-| `verdict:*` | As needed. Accepted work may be `verdict:pass`. Unclear work is `verdict:hold`, never `work:ready`. |
+| `verdict:*` | As needed. Accepted work may be `verdict:pass`. Unclear work is `verdict:hold`, never `work:ready`. The `craft-ready` atom always stamps `verdict:pass` on the `work:ready` issue it files (see below). |
 
 One primary `work:*` and one `pri:*`. Do not combine `work:ready` with `verdict:hold`, `verdict:reject`, or `verdict:needs-scout`.
 
@@ -34,7 +34,7 @@ One primary `work:*` and one `pri:*`. Do not combine `work:ready` with `verdict:
 
 ### Mill catalog (one rule)
 
-On a mill-catalog repo ([mikolaj92/lokay `repos.mikolaj92.yaml`](https://github.com/mikolaj92/lokay/blob/main/repos.mikolaj92.yaml)), also apply `ai:ready`. The mill surveys that label, not `work:ready`. Dual-label is this rule, not a coordination brain. `uv run dual-label-ready --repo OWNER/NAME --issue N` applies that mill label when `work:ready` is already present (no-op on heimdall; idempotent if `ai:ready` is already there). `uv run craft-ready --file spec.json` (stdin if `--file` omitted) files a complete `work:ready` issue from JSON (fail closed on missing fields; catalog also `ai:ready`; heimdall `work:ready` only).
+On a mill-catalog repo ([mikolaj92/lokay `repos.mikolaj92.yaml`](https://github.com/mikolaj92/lokay/blob/main/repos.mikolaj92.yaml)), also apply `ai:ready`. The mill surveys that label, not `work:ready`. Dual-label is this rule, not a coordination brain. `uv run dual-label-ready --repo OWNER/NAME --issue N` applies that mill label when `work:ready` is already present (no-op on heimdall; idempotent if `ai:ready` is already there). `uv run craft-ready --file spec.json` (stdin if `--file` omitted) files a complete `work:ready` issue from JSON (fail closed on missing fields; the filed issue is always labeled `verdict:pass` — default when the spec omits `verdict`, an explicit `verdict:hold`/`verdict:reject`/`verdict:needs-scout` is refused; catalog also `ai:ready`; heimdall `work:ready` only).
 
 Do not add heimdall to that catalog. Do not add `ai:*` to [`labels.yml`](labels.yml) — mill-owned; mapping lives here. heimdall itself: `work:ready` only.
 
