@@ -158,6 +158,8 @@ def apply_verdict(
         return err(str(exc), **base)
 
     labels = label_names(row.get("labels"))
+    if verdict == "verdict:pass" and "bifrost:out" in labels:
+        return err("use out-apply --artifact URL for verdict:pass on bifrost:out", **base)
     present = [lab for lab in labels if lab in allowed]
     add = [] if verdict in present else [verdict]
     remove = sorted(lab for lab in present if lab != verdict)
