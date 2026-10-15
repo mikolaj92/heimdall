@@ -45,4 +45,4 @@ packages = ["src/heimdall"]
 testpaths = ["tests"]
 
 [tool.lokay]
-test = ["uv", "run", "pytest", "-q"]
+test = ["uv", "run", "--frozen", "pytest"]
