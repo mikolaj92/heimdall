@@ -157,24 +157,13 @@ def apply_out(
     add = add_out + add_pass
     remove = sorted(remove_out + remove_pass)
 
+    body = f"{note}\n\n{url}" if note else url
     try:
+        add_comment(kind, repo, number, body, run=run)
         if add or remove:
             edit_labels(kind, repo, number, add, remove, run=run)
     except GhError as exc:
         return err(str(exc), **base)
-
-    if note:
-        try:
-            add_comment(kind, repo, number, note, run=run)
-        except GhError as exc:
-            return err(
-                str(exc),
-                repo=repo,
-                artifact=url,
-                added=add,
-                removed=remove,
-                **{kind: number},
-            )
 
     return ok(repo=repo, artifact=url, added=add, removed=remove, **{kind: number})
 
