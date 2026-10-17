@@ -30,8 +30,6 @@ Heimdall applies labels. Lokay reads `work:*`. Do not invent Heimdall names — 
 
 One primary `work:*` and one `pri:*`. Do not combine `work:ready` with `verdict:hold`, `verdict:reject`, or `verdict:needs-scout`.
 
-`signal:noise` ⇒ `verdict:reject`, no `work:*`.
-
 ### Mill catalog (one rule)
 
 On a mill-catalog repo ([mikolaj92/lokay `repos.mikolaj92.yaml`](https://github.com/mikolaj92/lokay/blob/main/repos.mikolaj92.yaml)), also apply `ai:ready`. The mill surveys that label, not `work:ready`. Dual-label is this rule, not a coordination brain. `uv run dual-label-ready --repo OWNER/NAME --issue N` applies that mill label when `work:ready` is already present (no-op on heimdall; idempotent if `ai:ready` is already there). `uv run craft-ready --file spec.json` (stdin if `--file` omitted) files a complete `work:ready` issue from JSON (fail closed on missing fields; the filed issue is always labeled `verdict:pass` — default when the spec omits `verdict`, an explicit `verdict:hold`/`verdict:reject`/`verdict:needs-scout` is refused; catalog also `ai:ready`; heimdall `work:ready` only).
@@ -55,9 +53,9 @@ Lokay moves `work:ready` → `work:doing` → `work:done` (or `work:blocked`). A
 - Signal triage: [`.github/ISSUE_TEMPLATE/inbound.yml`](.github/ISSUE_TEMPLATE/inbound.yml). `uv run craft-inbound --file spec.json` (stdin if `--file` omitted) files that inbound form (`bifrost:in`, never `work:ready`).
 - Lokay handoff: [`.github/ISSUE_TEMPLATE/work-ready.yml`](.github/ISSUE_TEMPLATE/work-ready.yml)
 
-Dropdown values on those forms are auto-applied as taxonomy labels by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml) (`uv run auto-label-issue`) on issue opened or edited. Humans do not need a second click for `source:*` / `signal:*` / chosen `pri:*`, or to replace `verdict:hold` when the inbound dropdown is not hold.
+Dropdown values are auto-applied as taxonomy labels by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml) (`uv run auto-label-issue`) on issue opened or edited. Inbound auto-label and `craft-inbound` enforce the noise rule in [`LABELS.md`](LABELS.md).
 
-Auto-label is not craft. `work:ready` still requires every required field above. Inbound stays `verdict:hold` until Heimdall decides; inbound auto-label never applies `work:ready`. Promoting an existing complete issue is `uv run ready-apply --repo OWNER/NAME --issue N`, not auto-label. The promotion fails closed unless exactly one direction from the `bifrost` namespace in [`labels.yml`](labels.yml) is already present; missing, dual, or unknown `bifrost:*` labels are refused. `uv run observe-inbound` lists open `bifrost:in` that is not yet `work:ready` and not outbound. Catalog `ai:ready` is applied by Heimdall at craft time, not by auto-label.
+Auto-label is not craft. `work:ready` still requires every required field above. Other inbound defaults to `verdict:hold` unless a verdict is proposed; inbound auto-label never applies `work:ready`. Promoting an existing complete issue is `uv run ready-apply --repo OWNER/NAME --issue N`, not auto-label. The promotion fails closed unless exactly one direction from the `bifrost` namespace in [`labels.yml`](labels.yml) is already present; missing, dual, or unknown `bifrost:*` labels are refused. `uv run observe-inbound` lists open `bifrost:in` that is not yet `work:ready` and not outbound. Catalog `ai:ready` is applied by Heimdall at craft time, not by auto-label.
 
 ## Do not
 

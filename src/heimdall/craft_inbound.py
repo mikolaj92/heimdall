@@ -1,7 +1,7 @@
 """Create a GitHub issue that matches the inbound triage template.
 
-Files bifrost:in with source:*, signal:*, and a proposed verdict:* (hold
-unless specified). Never work:ready or ai:ready — talk/triage, not mill
+Files bifrost:in with source:*, signal:*, and a proposed verdict:* (noise
+forces reject; otherwise defaults to hold). Never work:ready or ai:ready — not mill
 execute. Fail closed on missing fields, unknown labels, or gh errors.
 Does not wake the mill, merge, or send mail. Not on the Fala monitor path.
 """
@@ -114,6 +114,8 @@ def forbidden_request(spec: dict[str, Any]) -> str | None:
 
 
 def proposed_verdict(spec: dict[str, Any]) -> str:
+    if field(spec, "signal") == "signal:noise":
+        return "verdict:reject"
     if "proposed_verdict" not in spec:
         return DEFAULT_VERDICT
     return field(spec, "proposed_verdict")
