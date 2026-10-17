@@ -117,6 +117,9 @@ def test_applies_out_and_pass() -> None:
             raise AssertionError("must not fetch mill catalog")
         if args[:2] == ["issue", "view"]:
             return _labels("work:ready", "pri:p2")
+        if args[:2] == ["issue", "comment"]:
+            edits.append(args)
+            return ""
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""
@@ -142,6 +145,15 @@ def test_applies_out_and_pass() -> None:
     assert edits == [
         [
             "issue",
+            "comment",
+            "4",
+            "-R",
+            "mikolaj92/heimdall",
+            "--body",
+            ARTIFACT,
+        ],
+        [
+            "issue",
             "edit",
             "4",
             "-R",
@@ -162,6 +174,9 @@ def test_replaces_hold() -> None:
             raise AssertionError("must not fetch mill catalog")
         if args[:2] == ["issue", "view"]:
             return _labels("bifrost:in", "verdict:hold", "work:ready")
+        if args[:2] == ["issue", "comment"]:
+            assert args[-2:] == ["--body", ARTIFACT]
+            return ""
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""
@@ -229,6 +244,9 @@ def test_applies_on_pr() -> None:
             raise AssertionError("must not fetch mill catalog")
         if args[:2] == ["pr", "view"]:
             return _labels("verdict:hold", "bifrost:out")
+        if args[:2] == ["pr", "comment"]:
+            edits.append(args)
+            return ""
         if args[:2] == ["pr", "edit"]:
             edits.append(args)
             return ""
@@ -250,6 +268,15 @@ def test_applies_on_pr() -> None:
     assert edits == [
         [
             "pr",
+            "comment",
+            "9",
+            "-R",
+            "mikolaj92/lokay",
+            "--body",
+            ARTIFACT,
+        ],
+        [
+            "pr",
             "edit",
             "9",
             "-R",
@@ -262,7 +289,7 @@ def test_applies_on_pr() -> None:
     ]
 
 
-def test_comment_after_apply() -> None:
+def test_comment_before_apply() -> None:
     calls: list[list[str]] = []
 
     def run(args: list[str]) -> str:
@@ -292,8 +319,13 @@ def test_comment_after_apply() -> None:
         "-R",
         "mikolaj92/heimdall",
         "--body",
-        "QA pass",
-    ] in calls
+        f"QA pass\n\n{ARTIFACT}",
+    ] == calls[1]
+    assert [args[:2] for args in calls] == [
+        ["issue", "view"],
+        ["issue", "comment"],
+        ["issue", "edit"],
+    ]
 
 
 def test_fala_package_does_not_include_out_apply() -> None:
