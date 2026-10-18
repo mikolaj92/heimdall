@@ -1,24 +1,3 @@
-"""Apply taxonomy labels from inbound / work-ready issue-form dropdowns.
-
-GitHub renders each dropdown as `### Heading` then the chosen option
-(`source:github`). Only exact names from labels.yml are applied.
-
-  inbound     — source:*, signal:*, chosen verdict:*; noise forces reject
-                and removes work:*. Never applies work:ready.
-  work-ready  — chosen pri:* only (exactly one). Does not strip work:ready.
-  other       — no-op
-
-Idempotent. From the repo root:
-
-  uv run auto-label-issue              # Actions: issues opened/edited
-  uv run auto-label-issue --issue 12   # re-run on an existing issue
-  uv run auto-label-issue --self-test
-  uv run auto-label-issue --dry-run --body-file body.md --current-labels bifrost:in,verdict:hold
-
-Repo: --repo OWNER/NAME, else GH_REPO / GITHUB_REPOSITORY, else `gh repo view`.
-On issue opened/edited, .github/workflows/auto-label-issues.yml runs this.
-"""
-
 from __future__ import annotations
 
 import argparse

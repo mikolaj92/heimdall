@@ -1,11 +1,3 @@
-"""Create a GitHub issue that matches the inbound triage template.
-
-Files bifrost:in with source:*, signal:*, and a proposed verdict:* (noise
-forces reject; otherwise defaults to hold). Never work:ready or ai:ready — not mill
-execute. Fail closed on missing fields, unknown labels, or gh errors.
-Does not wake the mill, merge, or send mail. Not on the Fala monitor path.
-"""
-
 from __future__ import annotations
 
 import argparse
