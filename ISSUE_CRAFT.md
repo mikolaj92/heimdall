@@ -28,7 +28,7 @@ Heimdall applies labels. Lokay reads `work:*`. Do not invent Heimdall names — 
 | `bifrost:in` or `bifrost:out` | Anything Heimdall touches. Engineering handoff is almost always `bifrost:in`. |
 | `verdict:*` | As needed. Accepted work may be `verdict:pass`. Unclear work is `verdict:hold`, never `work:ready`. The `craft-ready` atom always stamps `verdict:pass` on the `work:ready` issue it files (see below). |
 
-One primary `work:*` and one `pri:*`. Do not combine `work:ready` with `verdict:hold`, `verdict:reject`, or `verdict:needs-scout`.
+`signal:noise` ⇒ `verdict:reject`, no `work:*`. Otherwise, one primary `work:*` and one `pri:*`. Do not combine `work:ready` with `verdict:hold`, `verdict:reject`, or `verdict:needs-scout`.
 
 ### Mill catalog (one rule)
 
