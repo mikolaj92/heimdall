@@ -63,13 +63,13 @@ Bifrost mailbox: AgentMail (IMAP into Apple Mail + MCP send/reply). Dedicated Gm
 
 ## Labels
 
-Source of truth: [`LABELS.md`](LABELS.md) · machine-readable: [`labels.yml`](labels.yml)
+Taxonomy: [`LABELS.md`](LABELS.md) · managed labels: [`labels.yml`](labels.yml), not a guarantee of GitHub’s current state.
 
 Namespaces: `bifrost` · `verdict` · `signal` · `source` · `story` · `work` · `pri`
 
 Templates: `.github/ISSUE_TEMPLATE/` (`inbound`, `work-ready`); dropdowns are auto-labeled by [`.github/workflows/auto-label-issues.yml`](.github/workflows/auto-label-issues.yml). Auto-label is not craft — see [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md). Lokay PRs: [`.github/pull_request_template.md`](.github/pull_request_template.md). Merged PRs that `Closes #N` move `work:ready`/`work:doing` → `work:done` ([`.github/workflows/advance-work-labels.yml`](.github/workflows/advance-work-labels.yml)).
 
-Apply taxonomy (idempotent; does not recreate GitHub defaults such as `bug` / `enhancement`): from the repo root, `uv run sync-labels` upserts from `labels.yml`; add `--prune` to delete any label not in that file. On push of `labels.yml` to `main`, `.github/workflows/sync-labels.yml` runs the same with `--prune`. Requires `gh` authenticated to the repo.
+From the repo root, `uv run sync-labels` creates or updates managed labels; `--prune` also deletes other labels during that run. Requires authenticated `gh`. `.github/workflows/sync-labels.yml` runs with `--prune` on `workflow_dispatch` or pushes to `main` changing `labels.yml`, `src/heimdall/sync_labels.py`, or the workflow itself. There is no continuous reconciliation.
 
 ## Monitor
 
