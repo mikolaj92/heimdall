@@ -81,4 +81,4 @@ Self-check after one atom: JSON on stdout. `FALA_EFFECTOR_OUTPUT_DIR` is written
 
 ## Status
 
-Role + taxonomy v1: issue craft, templates, label sync, and atoms described in [`CHANNEL.md`](CHANNEL.md). GitHub lists request at most 100 open issues or PRs per repo. Reaching that limit before label filtering returns `ok: false`: completeness cannot be confirmed, even at exactly 100. `dual-label-pass` skips mutations in that repo. Tests run on GitHub (push/PR) via [`.github/workflows/test.yml`](.github/workflows/test.yml) and locally with `uv run pytest` or Lokay (`[tool.lokay] test`). Mail Bifrost is not wired yet.
+Issue craft, templates, label sync, and atoms: [`CHANNEL.md`](CHANNEL.md). GitHub lists request at most 100 open issues or PRs per repo. At 100, before conversion or label filtering, observers and `dual-label-pass` return `ok: false` and CLI exit code 1: completeness is uncertain, even at exactly 100. Other repos retain their results; `dual-label-pass` skips that repo without rolling back other repos. Tests: [GitHub CI](.github/workflows/test.yml) or `uv run --frozen pytest -q` locally. Mail Bifrost is not wired yet.

@@ -204,40 +204,38 @@ def test_observe_catalog_error_fails_closed() -> None:
 ])
 @pytest.mark.parametrize("count", [None, 100, 101])
 @pytest.mark.parametrize("honor_limit", [True, False])
-def test_observe_repo_error_does_not_pretend_idle(atom, kind, count, honor_limit) -> None:
+def test_observe_repo_error_does_not_pretend_idle(atom, kind, count, honor_limit, monkeypatch) -> None:
     import heimdall.observe_queue as mod
 
     mod._catalog_cache = None
-
-    repo = HEIMDALL
-    message = "Could not resolve to a Repository"
-    if count is not None:
-        message = f"{kind} list for {repo} reached limit 100; may be truncated"
+    monkeypatch.delenv("FALA_EFFECTOR_OUTPUT_DIR", raising=False)
+    repo, other = HEIMDALL, "mikolaj92/lokay"
+    labels = ["work:ready", "work:blocked", "bifrost:out", "ai:pr-opened"] + (["verdict:pass"] if atom == "cleared" else [])
+    message = "Could not resolve to a Repository" if count is None else (
+        f"{kind} list for {repo} reached limit 100; result may be incomplete")
 
     def run(args: list[str]) -> str:
         if args[:1] == ["api"]:
             return CATALOG_YAML
-        if args[args.index("-R") + 1] == repo and args[0] == kind:
+        assert args[:2] in (["issue", "list"], ["pr", "list"])
+        target = args[args.index("-R") + 1]
+        if target == repo and args[0] == kind:
             if count is None:
                 raise GhError(message)
-            limit = int(args[args.index("--limit") + 1])
-            assert limit == 100
+            assert (limit := int(args[args.index("--limit") + 1])) == 100
             rows = [_pr(n, "noise", ["bug"], "feature/x") for n in range(count)]
             return json.dumps(rows[:limit] if honor_limit else rows)
-        return "[]"
-
+        return json.dumps([_pr(7, "kept", labels, "ai/x")]) if target == other else "[]"
     module = importlib.import_module(f"heimdall.observe_{atom}")
     observer = module.observe if atom == "queue" else getattr(module, f"observe_{atom}")
     kwargs = {"repo" if atom == "influenzer" else "heimdall": repo}
     payload = observer(run=run, **kwargs)
     assert payload["ok"] is False
     assert payload["error"] == "gh failed; not idle"
-    assert payload["failed"] == [
-        {"repo": repo, "error": message}
-    ]
-    assert payload["atom"] == f"observe-{atom}"
-    if atom == "queue":
-        surveyed = {row["repo"] for row in payload["repos"]}
-        assert repo not in surveyed
-        assert payload["counts"]["issues"] == 0
+    assert payload["failed"] == [{"repo": repo, "error": message}]
+    assert payload["atom"] == f"observe-{atom}" and module.emit_exit(payload) == 1
+    if atom not in {"inbound", "influenzer"}:
+        rows = payload["repos" if atom == "queue" else "pulls" if atom == "verdict" else "items"]
+        assert {row["repo"] for row in rows} == ({other, "mikolaj92/Docxtor", "mikolaj92/reviewkit"} if atom == "queue" else {other})
+        assert payload["counts"]["surveyed"] == 3
     mod._catalog_cache = None
