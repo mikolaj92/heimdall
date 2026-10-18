@@ -218,6 +218,8 @@ def list_issues(repo: str, *, run: GhFn) -> list[dict[str, Any]]:
     )
     if not isinstance(rows, list):
         raise GhError(f"issue list for {repo} was not a list")
+    if len(rows) >= int(LIST_LIMIT):
+        raise GhError(f"issue list for {repo} reached limit {LIST_LIMIT}; may be truncated")
     return [as_item(row) for row in rows if isinstance(row, dict)]
 
 
@@ -239,6 +241,8 @@ def list_pulls(repo: str, *, run: GhFn) -> list[dict[str, Any]]:
     )
     if not isinstance(rows, list):
         raise GhError(f"pr list for {repo} was not a list")
+    if len(rows) >= int(LIST_LIMIT):
+        raise GhError(f"pr list for {repo} reached limit {LIST_LIMIT}; may be truncated")
     out: list[dict[str, Any]] = []
     for row in rows:
         if not isinstance(row, dict):

@@ -3,6 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
+
 from heimdall.dual_label_pass import dual_label_pass
 from heimdall.observe_queue import HEIMDALL, GhError
 
@@ -182,7 +184,8 @@ def test_pass_catalog_error_fails_closed() -> None:
     _reset_catalog()
 
 
-def test_pass_repo_list_error_fails_closed() -> None:
+@pytest.mark.parametrize("count", [None, 100, 101])
+def test_pass_repo_list_error_fails_closed(count) -> None:
     _reset_catalog()
     edits: list[list[str]] = []
 
@@ -192,7 +195,13 @@ def test_pass_repo_list_error_fails_closed() -> None:
         if args[:2] == ["issue", "list"]:
             repo = args[args.index("-R") + 1]
             if repo == "mikolaj92/Docxtor":
-                raise GhError("Could not resolve to a Repository")
+                if count is None:
+                    raise GhError("Could not resolve to a Repository")
+                limit = int(args[args.index("--limit") + 1])
+                assert limit == 100
+                return json.dumps([
+                    _issue(n, ["work:ready"]) for n in range(count)
+                ][:limit])
             return "[]"
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
@@ -202,9 +211,15 @@ def test_pass_repo_list_error_fails_closed() -> None:
     payload = dual_label_pass(run=run)
     assert payload["ok"] is False
     assert payload["error"] == "gh failed; not idle"
+    message = (
+        "Could not resolve to a Repository" if count is None else
+        "issue list for mikolaj92/Docxtor reached limit 100; may be truncated"
+    )
     assert payload["failed"] == [
-        {"repo": "mikolaj92/Docxtor", "error": "Could not resolve to a Repository"}
+        {"repo": "mikolaj92/Docxtor", "error": message}
     ]
+    assert payload["counts"]["considered"] == 0
+    assert payload["added"] == []
     assert edits == []
     _reset_catalog()
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import json
 
 import pytest
@@ -117,7 +118,8 @@ def _pr(number: int, title: str, labels: list[str], head: str) -> dict:
     }
 
 
-def test_observe_ok_filters_and_counts() -> None:
+@pytest.mark.parametrize("kind", ["issue", "pr"])
+def test_observe_ok_filters_and_counts(kind: str) -> None:
     import heimdall.observe_queue as mod
 
     mod._catalog_cache = None
@@ -126,8 +128,13 @@ def test_observe_ok_filters_and_counts() -> None:
         if args[:1] == ["api"]:
             return CATALOG_YAML
         repo = args[args.index("-R") + 1]
-        kind = args[0]
-        if repo == HEIMDALL and kind == "issue":
+        if repo == "mikolaj92/reviewkit" and args[0] == kind:
+            assert args[args.index("--limit") + 1] == "100"
+            return json.dumps([
+                _pr(n, "noise", ["bug"], "feature/x") for n in range(99)
+            ])
+        kind_of_list = args[0]
+        if repo == HEIMDALL and kind_of_list == "issue":
             return json.dumps(
                 [
                     _issue(1, "ready", ["work:ready", "pri:p2"]),
@@ -135,25 +142,25 @@ def test_observe_ok_filters_and_counts() -> None:
                     _issue(3, "blocked", ["work:blocked"]),
                 ]
             )
-        if repo == HEIMDALL and kind == "pr":
+        if repo == HEIMDALL and kind_of_list == "pr":
             return json.dumps(
                 [_pr(4, "qa", ["bifrost:in"], "cursor/foo")]
             )
-        if repo == "mikolaj92/lokay" and kind == "issue":
+        if repo == "mikolaj92/lokay" and kind_of_list == "issue":
             return json.dumps(
                 [
                     _issue(10, "mill ready", ["ai:ready"]),
                     _issue(11, "noise", ["bug"]),
                 ]
             )
-        if repo == "mikolaj92/lokay" and kind == "pr":
+        if repo == "mikolaj92/lokay" and kind_of_list == "pr":
             return json.dumps(
                 [
                     _pr(12, "ai pr", ["ai:pr-opened"], "ai/fix/10"),
                     _pr(13, "human", ["enhancement"], "feature/x"),
                 ]
             )
-        if kind in {"issue", "pr"}:
+        if kind_of_list in {"issue", "pr"}:
             return "[]"
         raise AssertionError(args)
 
@@ -169,6 +176,8 @@ def test_observe_ok_filters_and_counts() -> None:
     assert [i["number"] for i in by_repo[HEIMDALL]["issues"]] == [1, 3]
     assert [p["number"] for p in by_repo["mikolaj92/lokay"]["pulls"]] == [12]
     assert "_head" not in by_repo["mikolaj92/lokay"]["pulls"][0]
+    assert by_repo["mikolaj92/reviewkit"]["issues"] == []
+    assert by_repo["mikolaj92/reviewkit"]["pulls"] == []
     mod._catalog_cache = None
 
 
@@ -187,27 +196,48 @@ def test_observe_catalog_error_fails_closed() -> None:
     mod._catalog_cache = None
 
 
-def test_observe_repo_error_does_not_pretend_idle() -> None:
+@pytest.mark.parametrize("atom,kind", [
+    ("queue", "issue"), ("queue", "pr"), ("verdict", "pr"),
+    ("outbound", "issue"), ("outbound", "pr"), ("blocked", "issue"),
+    ("cleared", "issue"), ("cleared", "pr"), ("inbound", "issue"),
+    ("influenzer", "issue"), ("influenzer", "pr"),
+])
+@pytest.mark.parametrize("count", [None, 100, 101])
+@pytest.mark.parametrize("honor_limit", [True, False])
+def test_observe_repo_error_does_not_pretend_idle(atom, kind, count, honor_limit) -> None:
     import heimdall.observe_queue as mod
 
     mod._catalog_cache = None
 
+    repo = HEIMDALL
+    message = "Could not resolve to a Repository"
+    if count is not None:
+        message = f"{kind} list for {repo} reached limit 100; may be truncated"
+
     def run(args: list[str]) -> str:
         if args[:1] == ["api"]:
             return CATALOG_YAML
-        repo = args[args.index("-R") + 1]
-        if repo == "mikolaj92/Docxtor":
-            raise GhError("Could not resolve to a Repository")
+        if args[args.index("-R") + 1] == repo and args[0] == kind:
+            if count is None:
+                raise GhError(message)
+            limit = int(args[args.index("--limit") + 1])
+            assert limit == 100
+            rows = [_pr(n, "noise", ["bug"], "feature/x") for n in range(count)]
+            return json.dumps(rows[:limit] if honor_limit else rows)
         return "[]"
 
-    payload = observe(run=run)
+    module = importlib.import_module(f"heimdall.observe_{atom}")
+    observer = module.observe if atom == "queue" else getattr(module, f"observe_{atom}")
+    kwargs = {"repo" if atom == "influenzer" else "heimdall": repo}
+    payload = observer(run=run, **kwargs)
     assert payload["ok"] is False
     assert payload["error"] == "gh failed; not idle"
     assert payload["failed"] == [
-        {"repo": "mikolaj92/Docxtor", "error": "Could not resolve to a Repository"}
+        {"repo": repo, "error": message}
     ]
-    surveyed = {row["repo"] for row in payload["repos"]}
-    assert "mikolaj92/Docxtor" not in surveyed
-    assert HEIMDALL in surveyed
-    assert payload["counts"]["issues"] == 0
+    assert payload["atom"] == f"observe-{atom}"
+    if atom == "queue":
+        surveyed = {row["repo"] for row in payload["repos"]}
+        assert repo not in surveyed
+        assert payload["counts"]["issues"] == 0
     mod._catalog_cache = None
