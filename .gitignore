@@ -9,3 +9,5 @@ build/
 runtime.db
 artifacts/
 .lokay/
+/.lokay/
+/.omo/
