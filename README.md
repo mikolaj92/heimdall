@@ -8,7 +8,6 @@ CEO gateway and right hand. Not a chat desk. Not a code mill. Scout and world ta
 - Inbound triage (feedback, mentions, issues) — bots and world land here, not on the CEO
 - Fit check (repo / product scope)
 - Issue craft for Lokay (`work:ready` + `pri:*`) — [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md)
-- Routing to Grok Bot teammates via agent messages (`SendToAgent`)
 - Label taxonomy and gate decisions
 - QA on Lokay’s result before Influenzer may claim a ship
 
@@ -38,7 +37,7 @@ Handoff chain: **inbound → triage → ready issue (`work:ready`) → Lokay →
 
 Heimdall’s only handoff to Lokay is that labeled issue. Never chat or email Lokay to execute. See [`ISSUE_CRAFT.md`](ISSUE_CRAFT.md).
 
-Channels: CEO ↔ Heimdall is email. Heimdall ↔ Grok Bot teammates is agent messages. Email is not the internal bot bus. See [`CHANNEL.md`](CHANNEL.md).
+Channels: see [`CHANNEL.md`](CHANNEL.md).
 
 ## Flow
 
@@ -53,8 +52,6 @@ world / scout / bots ──► Heimdall ──► work:ready ──► Lokay ─
                              ▲
                       Influenzer
                       (feedback in; outbound only after verdict:pass)
-
-Heimdall ↔ Grok Bots: agent messages (SendToAgent), not email.
 ```
 
 Hermes Agent (Nous) is one world behind Bifrost — a messenger you can ask to do things, not the CEO UI. Its email gateway is chat-over-mail for that world, not the org front door.
@@ -81,4 +78,4 @@ Self-check after one atom: JSON on stdout. `FALA_EFFECTOR_OUTPUT_DIR` is written
 
 ## Status
 
-Role + taxonomy v1. Issue craft contract, templates, label sync. Atoms: `observe-queue` (`uv run observe-queue`), `dual-label-ready` (`uv run dual-label-ready --repo OWNER/NAME --issue N`), `dual-label-pass` (`uv run dual-label-pass`), `observe-verdict` (`uv run observe-verdict`), `observe-outbound` (`uv run observe-outbound`), `observe-blocked` (`uv run observe-blocked`), `observe-influenzer` (`uv run observe-influenzer`), `observe-inbound` (`uv run observe-inbound`), `observe-cleared` (`uv run observe-cleared`), `craft-ready` (`uv run craft-ready --file spec.json`), `craft-inbound` (`uv run craft-inbound --file spec.json`), `verdict-apply` (`uv run verdict-apply --repo OWNER/NAME --issue N --verdict verdict:pass`), `out-apply` (`uv run out-apply --repo OWNER/NAME --issue N --artifact URL`), `influenzer-handoff` (`uv run influenzer-handoff --repo OWNER/NAME --issue N --artifact URL --story story:ship`), `sync-labels` (`uv run sync-labels`), `auto-label-issue` (`uv run auto-label-issue`), `advance-work-labels` (`uv run advance-work-labels`), `ready-apply` (`uv run ready-apply --repo OWNER/NAME --issue N`), `inbound-close` (`uv run inbound-close --repo OWNER/NAME --issue N --ready M`), `cleared-close` (`uv run cleared-close --repo OWNER/NAME --issue N --handoff M`). `verdict-apply` refuses `verdict:pass` on `bifrost:out`; use `out-apply --artifact URL`. Monitor path is declared, not ticked — run atoms by hand; mill autonomy stays mill. Tests run on GitHub (push/PR) via [`.github/workflows/test.yml`](.github/workflows/test.yml) and locally via Lokay (`[tool.lokay] test`). Mail Bifrost not wired yet.
+Role + taxonomy v1. Issue craft contract, templates, label sync. Atoms: `observe-queue` (`uv run observe-queue`), `dual-label-ready` (`uv run dual-label-ready --repo OWNER/NAME --issue N`), `dual-label-pass` (`uv run dual-label-pass`), `observe-verdict` (`uv run observe-verdict`), `observe-outbound` (`uv run observe-outbound`), `observe-blocked` (`uv run observe-blocked`), `observe-influenzer` (`uv run observe-influenzer`), `observe-inbound` (`uv run observe-inbound`), `observe-cleared` (`uv run observe-cleared`), `craft-ready` (`uv run craft-ready --file spec.json`), `craft-inbound` (`uv run craft-inbound --file spec.json`), `verdict-apply` (`uv run verdict-apply --repo OWNER/NAME --issue N --verdict verdict:pass`), `out-apply` (`uv run out-apply --repo OWNER/NAME --issue N --artifact URL`), `influenzer-handoff` (`uv run influenzer-handoff --repo OWNER/NAME --issue N --artifact URL --story story:ship`), `sync-labels` (`uv run sync-labels`), `auto-label-issue` (`uv run auto-label-issue`), `advance-work-labels` (`uv run advance-work-labels`), `ready-apply` (`uv run ready-apply --repo OWNER/NAME --issue N`), `inbound-close` (`uv run inbound-close --repo OWNER/NAME --issue N --ready M`), `cleared-close` (`uv run cleared-close --repo OWNER/NAME --issue N --handoff M`). `verdict-apply` refuses `verdict:pass` on `bifrost:out`; use `out-apply --artifact URL`. Monitor path is declared, not ticked — run atoms by hand; mill autonomy stays mill. Tests run on GitHub (push/PR) via [`.github/workflows/test.yml`](.github/workflows/test.yml) and locally via Lokay (`[tool.lokay] test`). Bifrost mail and message transport to bots are not wired. Work handoff uses GitHub issues and labels.
