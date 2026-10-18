@@ -54,7 +54,7 @@ body:
     id: verdict
     attributes:
       label: Proposed verdict
-      description: Applied automatically; noise always becomes `verdict:reject`, without `work:*`. Incomplete work is never `work:ready`.
+      description: Replaces the current verdict automatically, including `verdict:hold`; never applies `work:ready`.
       options:
         - "verdict:hold"
         - "verdict:pass"
