@@ -1,24 +1,3 @@
-"""Apply taxonomy labels from inbound / work-ready issue-form dropdowns.
-
-GitHub renders each dropdown as `### Heading` then the chosen option
-(`source:github`). Only exact names from labels.yml are applied.
-
-  inbound     — source:*, signal:*; replace verdict:hold if another
-                verdict:* is chosen. Never applies work:ready.
-  work-ready  — chosen pri:* only (exactly one). Does not strip work:ready.
-  other       — no-op
-
-Idempotent. From the repo root:
-
-  uv run auto-label-issue              # Actions: issues opened/edited
-  uv run auto-label-issue --issue 12   # re-run on an existing issue
-  uv run auto-label-issue --self-test
-  uv run auto-label-issue --dry-run --body-file body.md --current-labels bifrost:in,verdict:hold
-
-Repo: --repo OWNER/NAME, else GH_REPO / GITHUB_REPOSITORY, else `gh repo view`.
-On issue opened/edited, .github/workflows/auto-label-issues.yml runs this.
-"""
-
 from __future__ import annotations
 
 import argparse
@@ -100,6 +79,13 @@ def plan_labels(
     remove: set[str] = set()
     if template == "inbound":
         mapping = INBOUND_FIELDS
+        if _chosen(fields.get("Signal kind", ""), "signal", allowed) == "signal:noise":
+            fields["Proposed verdict"] = "verdict:reject"
+            remove.update(
+                lab for lab in current
+                if lab.startswith("work:")
+                or (lab.startswith("verdict:") and lab != "verdict:reject")
+            )
     elif template == "work-ready":
         mapping = WORK_READY_FIELDS
     else:

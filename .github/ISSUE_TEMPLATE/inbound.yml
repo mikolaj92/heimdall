@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Heimdall triage. This template sets `bifrost:in` and `verdict:hold`. Dropdowns auto-apply matching `source:*` / `signal:*` (and replace `verdict:hold` if the proposed verdict is not hold). Do not apply `work:ready` until ISSUE_CRAFT.md is complete.
+        Heimdall triage starts with `bifrost:in` and `verdict:hold`. Dropdowns apply taxonomy labels; noise forces rejection without `work:*`. Other work requires ISSUE_CRAFT.md.
   - type: dropdown
     id: source
     attributes:
@@ -54,7 +54,7 @@ body:
     id: verdict
     attributes:
       label: Proposed verdict
-      description: Intended gate. Leave the issue on `verdict:hold` until Heimdall applies the final label. Incomplete work is never `work:ready`.
+      description: Applied automatically; noise always becomes `verdict:reject`, without `work:*`. Incomplete work is never `work:ready`.
       options:
         - "verdict:hold"
         - "verdict:pass"

@@ -29,6 +29,16 @@ def test_inbound_never_applies_work_ready() -> None:
     assert plan.add == frozenset({"source:github", "signal:bug", "verdict:pass"})
     assert plan.remove == frozenset({"verdict:hold"})
 
+    body = body.replace("signal:bug", "signal:noise").replace("verdict:pass", "verdict:hold")
+    work = {"work:ready", "work:doing", "work:blocked", "work:done"}
+    current = {"bifrost:in", "verdict:hold"} | work
+    plan = plan_labels(body, current, allowed)
+    assert plan.add == frozenset({"source:github", "signal:noise", "verdict:reject"})
+    assert plan.remove == frozenset({"verdict:hold"} | work)
+    assert plan_labels(body, (current - plan.remove) | plan.add, allowed) == Plan(
+        frozenset(), frozenset()
+    )
+
 
 def test_work_ready_form_swaps_pri_only() -> None:
     allowed = taxonomy_names(REPO_LABELS)
