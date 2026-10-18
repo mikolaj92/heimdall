@@ -3,7 +3,7 @@
 Source of truth for labels Heimdall may apply across org repos.
 Namespaces are prefixes. One label per dimension unless noted.
 
-Heimdall owns applying and changing these. Lokay consumes `work:*`. Influenzer consumes `story:*` and respects `verdict:*` on outbound. The scout (human) is pinged via `verdict:needs-scout`.
+Heimdall owns applying and changing these. Lokay consumes `work:*`. `influenzer-handoff` passes the `--story` taxonomy value in the title and Signal section; outbound requires `verdict:pass`. The scout (human) is pinged via `verdict:needs-scout`.
 
 ## bifrost:* — direction
 
@@ -62,7 +62,7 @@ One primary.
 | `story:decision` | Choice we made and why |
 | `story:failure` | What broke / what we learned |
 
-One primary. Prefer `story:major` / `story:ship` / `story:failure` over vibes.
+One primary for outbound classification. `influenzer-handoff` neither requires `story:*` on the source nor applies it to the source or destination issue.
 
 ## work:* — queue for Lokay (producer)
 
