@@ -74,7 +74,7 @@ From the repo root, `uv run sync-labels` creates or updates managed labels; `--p
 
 From the repo root, run each effector by hand with the `uv run …` command in that TOML (`uv run observe-queue`, `uv run dual-label-pass`, …). Do not use bare `python3`.
 
-Self-check after one atom: JSON on stdout. `FALA_EFFECTOR_OUTPUT_DIR` is written only if a Fala host sets it (this repo does not). Mill autonomy stays mill.
+Self-check after one atom: JSON on stdout. `observe-*` and `dual-label-pass` fetch at most 100 open issues and 100 open PRs per repo; reaching either fetched limit returns `ok: false` before label filtering (possibly truncated). `FALA_EFFECTOR_OUTPUT_DIR` is written only if a Fala host sets it (this repo does not). Mill autonomy stays mill.
 
 ## Status
 
