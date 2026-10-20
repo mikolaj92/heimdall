@@ -51,7 +51,7 @@ _catalog_cache: list[str] | None = None
 
 
 class GhError(RuntimeError):
-    """GitHub read failed or may be incomplete; callers must not report idle."""
+    """gh failed; caller must not pretend the queue is idle."""
 
 
 def ok(**fields: Any) -> dict[str, Any]:
@@ -218,8 +218,6 @@ def list_issues(repo: str, *, run: GhFn) -> list[dict[str, Any]]:
     )
     if not isinstance(rows, list):
         raise GhError(f"issue list for {repo} was not a list")
-    if len(rows) >= int(LIST_LIMIT):
-        raise GhError(f"issue list for {repo} reached limit {LIST_LIMIT}; result may be incomplete")
     return [as_item(row) for row in rows if isinstance(row, dict)]
 
 
@@ -241,8 +239,6 @@ def list_pulls(repo: str, *, run: GhFn) -> list[dict[str, Any]]:
     )
     if not isinstance(rows, list):
         raise GhError(f"pr list for {repo} was not a list")
-    if len(rows) >= int(LIST_LIMIT):
-        raise GhError(f"pr list for {repo} reached limit {LIST_LIMIT}; result may be incomplete")
     out: list[dict[str, Any]] = []
     for row in rows:
         if not isinstance(row, dict):

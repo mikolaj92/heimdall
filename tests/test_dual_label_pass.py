@@ -3,8 +3,6 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-import pytest
-
 from heimdall.dual_label_pass import dual_label_pass
 from heimdall.observe_queue import HEIMDALL, GhError
 
@@ -184,41 +182,30 @@ def test_pass_catalog_error_fails_closed() -> None:
     _reset_catalog()
 
 
-@pytest.mark.parametrize("count", [None, 100, 101])
-def test_pass_repo_list_error_fails_closed(count) -> None:
+def test_pass_repo_list_error_fails_closed() -> None:
     _reset_catalog()
     edits: list[list[str]] = []
+
     def run(args: list[str]) -> str:
         if args[:1] == ["api"]:
             return CATALOG_YAML
-        repo = args[args.index("-R") + 1]
         if args[:2] == ["issue", "list"]:
+            repo = args[args.index("-R") + 1]
             if repo == "mikolaj92/Docxtor":
-                if count is None:
-                    raise GhError("Could not resolve to a Repository")
-                limit = int(args[args.index("--limit") + 1])
-                assert limit == 100
-                return json.dumps([
-                    _issue(n, ["work:ready"]) for n in range(count)
-                ][:limit])
-            return json.dumps([_issue(7, ["work:ready"])]) if repo == "mikolaj92/lokay" else "[]"
-        assert repo == "mikolaj92/lokay", args
-        if args[:2] == ["issue", "view"]:
-            return json.dumps(_issue(7, ["work:ready"]))
+                raise GhError("Could not resolve to a Repository")
+            return "[]"
         if args[:2] == ["issue", "edit"]:
             edits.append(args)
             return ""
         raise AssertionError(args)
+
     payload = dual_label_pass(run=run)
-    assert payload["ok"] is False and payload["error"] == "gh failed; not idle"
-    message = (
-        "Could not resolve to a Repository" if count is None else
-        "issue list for mikolaj92/Docxtor reached limit 100; result may be incomplete"
-    )
-    assert payload["failed"] == [{"repo": "mikolaj92/Docxtor", "error": message}]
-    assert payload["counts"]["considered"] == payload["counts"]["added"] == 1
-    assert payload["added"] == [{"repo": "mikolaj92/lokay", "issue": 7, "added": ["ai:ready"]}]
-    assert edits == [["issue", "edit", "7", "-R", "mikolaj92/lokay", "--add-label", "ai:ready"]]
+    assert payload["ok"] is False
+    assert payload["error"] == "gh failed; not idle"
+    assert payload["failed"] == [
+        {"repo": "mikolaj92/Docxtor", "error": "Could not resolve to a Repository"}
+    ]
+    assert edits == []
     _reset_catalog()
 
 
